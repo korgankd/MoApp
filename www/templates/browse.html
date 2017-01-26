@@ -1,0 +1,39 @@
+<ion-view view-title="Browse">
+  <ion-content>
+  <br>
+    <ion-list>
+      <ion-item ng-repeat="account in accounts" ng-click="">
+        <div class="list card">
+          <div class="item">
+            <h3><b>Username:</b> {{account.username}}</h3>
+            <h2><b>Name:</b> {{account.name}}</h2>
+            <p><b>Location:</b> {{account.location}}</p>
+          </div>
+          <div class="item item-body">
+            <p><b>Description:</b> {{account.description}}
+            </p>
+              <img src="{{account.image[0]}}" style="width:200px; height:200px;"/>
+          </div>
+          <div class="item tabs tabs-secondary tabs-icon-left">
+            <a class="tab-item">
+              <i class="icon ion-thumbsup"></i>
+              Like
+            </a>
+            <a class="tab-item">
+              <i class="icon ion-chatbox"></i>
+              Review
+            </a>
+            <a class="tab-item">
+              <i class="icon ion-share"></i>
+              Share
+            </a>
+            <a class="tab-item">
+              <i class="icon ion-checkmark"></i>
+              Book
+            </a>
+          </div>
+        </div>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>
