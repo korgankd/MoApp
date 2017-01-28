@@ -16,6 +16,11 @@
                 <img src="{{pic}}" style="width:200px; height:200px;"/>
               </td>
             </tr></table>
+            <table> <tr ng-repeat="vid in user.video">
+              <td>
+                <iframe width="420" height="315" src="https://www.youtube.com/v/htOroIbxiFY"></iframe>
+              </td>
+            </tr></table>
           </div>
           <div class="item tabs tabs-secondary tabs-icon-left">
             <a class="tab-item">
@@ -36,9 +41,8 @@
             </a>
           </div>
         </div>
+        <button class="button button-block button-positive" type="register" ng-click="editprofile()">Edit profile information</button>
         <button ng-click="checkAuth()">Check Auth</button>
         <button ng-click="logout()">Logout</button>
-        <button ng-click="updateUser()">Update Page</button>
-        <button ng-click="editprofile()">Edit profile</button>
   </ion-content>
 </ion-view>

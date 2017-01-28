@@ -62,16 +62,11 @@ angular.module('starter.controllers', ['ionic.cloud'])
     $ionicAuth.signup(details).then(function(){
       alert("Signup Success! " + details.email);
       $scope.doLogin();
-      usersDB.update({
-        id: $ionicUser.id,
-        image: ["https://s3.amazonaws.com/ionic-api-auth/users-default-avatar@2x.png"],
-        complete: true
-      });
     }, function(err) {
       for (var e of err.details) {
         if (e === 'conflict_email') {
           alert('A user has already signed up with the supplied email');
-        } else if(e === 'required_password'){
+        } else if(e === 'required_password') {
           alert('Missing password field');
         } else if(e === 'required_email') {
           alert('Missing email field');
@@ -92,7 +87,6 @@ angular.module('starter.controllers', ['ionic.cloud'])
   var usersDB = $ionicDB.collection('users');
   $scope.userData = {};
 
-  // Create the login modal that we will use later
   $ionicModal.fromTemplateUrl('templates/editprofile.html', {
     scope: $scope
   }).then(function(modal) {
@@ -112,7 +106,6 @@ angular.module('starter.controllers', ['ionic.cloud'])
       $scope.user = USER;
       $scope.user.email = $ionicUser.details.email;
     });
-    //$scope.user = $scope.updateUser();
   });
 
   $scope.checkAuth = function() {
@@ -129,8 +122,16 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
   $scope.saveData = function() {
     if($ionicAuth.isAuthenticated()) {
+      var vid;
       var images = $scope.user.image;
-      var upadateData = {id: $ionicUser.id};
+      var videos = $scope.user.video;
+      if(images == undefined) {
+        images = [];
+      }
+      if(videos == undefined) {
+        videos = [];
+      }
+      var upadateData = {id: $ionicUser.id, complete: true};
       if($scope.userData.username != undefined) {
         upadateData.username = $scope.userData.username;
         $scope.user.username = $scope.userData.username;
@@ -148,8 +149,23 @@ angular.module('starter.controllers', ['ionic.cloud'])
         $scope.user.description = $scope.userData.description;
       }
       if($scope.userData.image != undefined) {
-        upadateData.image = $scope.userData.image.push($scope.userData.image);
-        $scope.user.image = upadateData.image;
+        // if($scope.user.image.indexOf($scope.userData.image) >= 0) {
+        //   alert("Cannot add the same image twice.");
+        // } else {
+          images.push($scope.userData.image);
+          upadateData.image = images;
+          $scope.user.image = upadateData.image;
+        //}
+      }
+      if($scope.userData.video != undefined) {
+        // if($scope.user.video.indexOf($scope.userData.video) >= 0) {
+        //   alert("Cannot add the same video twice.");
+        // } else {
+          vid = $scope.userData.video.replace("watch?v=", "v/");
+          videos.push(vid);
+          upadateData.video = videos;
+          $scope.user.video = upadateData.video;
+        //}
       }
       $scope.modal.hide();
       usersDB.update(upadateData);
