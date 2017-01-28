@@ -128,72 +128,34 @@ angular.module('starter.controllers', ['ionic.cloud'])
   };
 
   $scope.saveData = function() {
-    var imageBool = false;
     if($ionicAuth.isAuthenticated()) {
+      var images = $scope.user.image;
       var upadateData = {id: $ionicUser.id};
       if($scope.userData.username != undefined) {
         upadateData.username = $scope.userData.username;
+        $scope.user.username = $scope.userData.username;
       }
       if($scope.userData.name != undefined) {
         upadateData.name = $scope.userData.name;
+        $scope.user.name = $scope.userData.name;
       }
       if($scope.userData.location != undefined) {
         upadateData.location = $scope.userData.location;
+        $scope.user.location = $scope.userData.location;
       }
       if($scope.userData.description != undefined) {
         upadateData.description = $scope.userData.description;
+        $scope.user.description = $scope.userData.description;
       }
-      usersDB.update(upadateData);
       if($scope.userData.image != undefined) {
-        upadateData.image = $scope.userData.image;
-        imageBool = true;
+        upadateData.image = $scope.userData.image.push($scope.userData.image);
+        $scope.user.image = upadateData.image;
       }
       $scope.modal.hide();
-      usersDB.find({id: $ionicUser.id}).fetch().subscribe(function(msg) {
-        var images = msg.image;
-        if(imageBool) {
-          images.push(updateData.image);
-          usersDB.update({id: $ionicUser.id, image: images});
-          msg.image = images;
-        }
-        $scope.user = msg;
-      });
+      usersDB.update(upadateData);
+    } else {
+      alert("You must be signed in to do that.");
     }
-  };
-
-  $scope.updateUser = function() {
-    var scopeUser = $scope.user;
-    console.log($ionicUser);
-    if($ionicAuth.isAuthenticated()) {
-      usersDB.find({id:$ionicUser.id}).fetch().subscribe( function(USER) {
-        scopeUser = USER;
-        scopeUser.email = $ionicUser.details.email;
-        //check for properties to update scope.user, if they exist - hide input bar
-        if(scopeUser.username != undefined) {
-          document.getElementById("username").style.display = "none";
-        } else {
-          document.getElementById("username").style.display = "inline";
-        }
-        if(scopeUser.name != undefined) {
-          document.getElementById("name").style.display = "none";
-        } else {
-          document.getElementById("name").style.display = "inline";
-        }
-        if(scopeUser.location != undefined) {
-          document.getElementById("location").style.display = "none";
-        } else {
-          document.getElementById("location").style.display = "inline";
-        }
-        if(scopeUser.description != undefined) {
-          document.getElementById("description").style.display = "none";
-        } else {
-          document.getElementById("description").style.display = "inline";
-        }
-      });
-    }
-    console.log("scopeUser");
-    console.log(scopeUser);
-    return scopeUser;
   };
 
   $scope.logout = function() {
@@ -209,7 +171,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
   usersDB.findAll({complete: true}).fetch().subscribe(function(msg) {
     $scope.accounts = msg;
-    console.log("$scope.account");
+    console.log("$scope.accounts");
     console.log($scope.accounts);
     console.log($ionicUser);
   });
