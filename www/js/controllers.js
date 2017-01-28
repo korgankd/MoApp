@@ -1,6 +1,6 @@
 angular.module('starter.controllers', ['ionic.cloud'])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $state) {
+.controller('AppCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window) {
 
   $ionicDB.connect();
   var usersDB = $ionicDB.collection('users');
@@ -22,6 +22,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
   }).then(function(modal) {
     $scope.modal = modal;
   });
+  console.log($scope);
 
   // Triggered in the login modal to close it
   $scope.closeLogin = function() {
@@ -41,13 +42,11 @@ angular.module('starter.controllers', ['ionic.cloud'])
       $scope.modal.hide();
       console.log($ionicUser);
       usersDB.find({id:$ionicUser.id}).fetch().subscribe(function(USER) {
-        scopeUser = USER;
-        scopeUser.email = $ionicUser.details.email;
-        $state.go('app.profile');
+        $scope.user = USER;
+        $scope.user.email = $ionicUser.details.email;
       });
 
     }, function(err) {
-      alert("Incorrect email or password.");
       for (var e of err.details) {
         alert(e);
       }
@@ -65,35 +64,55 @@ angular.module('starter.controllers', ['ionic.cloud'])
       $scope.doLogin();
       usersDB.update({
         id: $ionicUser.id,
-        image: [$ionicUser.image]
+        image: ["https://s3.amazonaws.com/ionic-api-auth/users-default-avatar@2x.png"],
+        complete: true
       });
     }, function(err) {
       for (var e of err.details) {
         if (e === 'conflict_email') {
-          alert('Email already exists.');
+          alert('A user has already signed up with the supplied email');
+        } else if(e === 'required_password'){
+          alert('Missing password field');
+        } else if(e === 'required_email') {
+          alert('Missing email field');
+        } else if(e === 'invalid_email') {
+          alert('The email did not pass validation.');
         } else {
           alert(e);
         }
       }
     });
   };
-
-
 })
 
-.controller('ProfileCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser) {
+.controller('ProfileCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window) {
 
   $scope.user = {};
   $ionicDB.connect();
   var usersDB = $ionicDB.collection('users');
   $scope.userData = {};
 
+  // Create the login modal that we will use later
+  $ionicModal.fromTemplateUrl('templates/editprofile.html', {
+    scope: $scope
+  }).then(function(modal) {
+    $scope.modal = modal;
+  });
+
+  $scope.editprofile = function() {
+    $scope.modal.show();
+  };
+
+  $scope.closeEdit = function() {
+    $scope.modal.hide();
+  };
+
   angular.element(document).ready(function () {
     usersDB.find({id:$ionicUser.id}).fetch().subscribe(function(USER) {
       $scope.user = USER;
       $scope.user.email = $ionicUser.details.email;
     });
-    $scope.user = $scope.updateUser();
+    //$scope.user = $scope.updateUser();
   });
 
   $scope.checkAuth = function() {
@@ -109,20 +128,36 @@ angular.module('starter.controllers', ['ionic.cloud'])
   };
 
   $scope.saveData = function() {
+    var imageBool = false;
     if($ionicAuth.isAuthenticated()) {
+      var upadateData = {id: $ionicUser.id};
       if($scope.userData.username != undefined) {
-        usersDB.update({id: $ionicUser.id, username: $scope.userData.username});
+        upadateData.username = $scope.userData.username;
       }
       if($scope.userData.name != undefined) {
-        usersDB.update({id: $ionicUser.id, name: $scope.userData.name});
+        upadateData.name = $scope.userData.name;
       }
       if($scope.userData.location != undefined) {
-        usersDB.update({id: $ionicUser.id, location: $scope.userData.location});
+        upadateData.location = $scope.userData.location;
       }
       if($scope.userData.description != undefined) {
-        usersDB.update({id: $ionicUser.id, description: $scope.userData.description});
+        upadateData.description = $scope.userData.description;
       }
-      $scope.user = $scope.updateUser();
+      usersDB.update(upadateData);
+      if($scope.userData.image != undefined) {
+        upadateData.image = $scope.userData.image;
+        imageBool = true;
+      }
+      $scope.modal.hide();
+      usersDB.find({id: $ionicUser.id}).fetch().subscribe(function(msg) {
+        var images = msg.image;
+        if(imageBool) {
+          images.push(updateData.image);
+          usersDB.update({id: $ionicUser.id, image: images});
+          msg.image = images;
+        }
+        $scope.user = msg;
+      });
     }
   };
 
@@ -136,15 +171,23 @@ angular.module('starter.controllers', ['ionic.cloud'])
         //check for properties to update scope.user, if they exist - hide input bar
         if(scopeUser.username != undefined) {
           document.getElementById("username").style.display = "none";
+        } else {
+          document.getElementById("username").style.display = "inline";
         }
         if(scopeUser.name != undefined) {
           document.getElementById("name").style.display = "none";
+        } else {
+          document.getElementById("name").style.display = "inline";
         }
         if(scopeUser.location != undefined) {
           document.getElementById("location").style.display = "none";
+        } else {
+          document.getElementById("location").style.display = "inline";
         }
         if(scopeUser.description != undefined) {
           document.getElementById("description").style.display = "none";
+        } else {
+          document.getElementById("description").style.display = "inline";
         }
       });
     }
@@ -155,7 +198,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
   $scope.logout = function() {
     $ionicAuth.logout();
-    $scope.user = {};
+    $scope.user = {name:"", username:"", email:"", description:"", location:"", image:""};
     alert("Successfully logged out.");
   };
 })
@@ -166,7 +209,8 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
   usersDB.findAll({complete: true}).fetch().subscribe(function(msg) {
     $scope.accounts = msg;
-    console.log($scope.account);
+    console.log("$scope.account");
+    console.log($scope.accounts);
     console.log($ionicUser);
   });
 });

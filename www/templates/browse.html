@@ -12,7 +12,12 @@
           <div class="item item-body">
             <p><b>Description:</b> {{account.description}}
             </p>
-              <img src="{{account.image[0]}}" style="width:200px; height:200px;"/>
+
+            <table> <tr>
+              <td ng-repeat="pic in account.image"> 
+                <img src="{{pic}}" style="width:200px; height:200px;"/>
+              </td>
+            </tr></table>
           </div>
           <div class="item tabs tabs-secondary tabs-icon-left">
             <a class="tab-item">

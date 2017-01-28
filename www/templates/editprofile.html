@@ -1,0 +1,37 @@
+<ion-modal-view>
+  <ion-header-bar>
+    <h1 class="title">Edit Profile</h1>
+    <div class="buttons">
+      <button class="button button-positive" ng-click="closeEdit()">Close</button>
+    </div>
+  </ion-header-bar>
+  <ion-content>
+    <form ng-submit="saveData()">
+      <div class="list">
+        <label class="item item-input">
+          <span class="input-label">Change Name</span>
+          <input type="text" ng-model="userData.name">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Change Username</span>
+          <input type="text" ng-model="userData.username">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Change Location</span>
+          <input type="text" ng-model="userData.location">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Change Description</span>
+          <input type="text" ng-model="userData.description">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Add Image URL</span>
+          <input type="text" ng-model="userData.image">
+        </label>
+        <label class="item">
+          <button class="button button-block button-positive" type="submit">Save</button>
+        </label>
+      </div>
+    </form>
+  </ion-content>
+</ion-modal-view>
