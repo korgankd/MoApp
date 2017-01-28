@@ -1,5 +1,11 @@
 angular.module('starter.controllers', ['ionic.cloud'])
 
+.filter('trusted', ['$sce', function ($sce) {
+    return function(url) {
+        return $sce.trustAsResourceUrl(url);
+    };
+}])
+
 .controller('AppCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window) {
 
   $ionicDB.connect();
@@ -12,11 +18,9 @@ angular.module('starter.controllers', ['ionic.cloud'])
   //});
 
 
-  // Form data for the login modal
   $scope.loginData = {};
   $scope.user = {};
 
-  // Create the login modal that we will use later
   $ionicModal.fromTemplateUrl('templates/login.html', {
     scope: $scope
   }).then(function(modal) {
@@ -24,26 +28,23 @@ angular.module('starter.controllers', ['ionic.cloud'])
   });
   console.log($scope);
 
-  // Triggered in the login modal to close it
   $scope.closeLogin = function() {
     $scope.modal.hide();
   };
 
-  // Open the login modal
   $scope.login = function() {
     $scope.modal.show();
   };
 
-  // Perform the login action when the user submits the login form
   $scope.doLogin = function() {
     var details = {"email": $scope.loginData.email, "password": $scope.loginData.password};
     $ionicAuth.login('basic', details).then(function() {
       alert("Login Successful.");
       $scope.modal.hide();
-      console.log($ionicUser);
       usersDB.find({id:$ionicUser.id}).fetch().subscribe(function(USER) {
         $scope.user = USER;
         $scope.user.email = $ionicUser.details.email;
+        console.log($scope.user);
       });
 
     }, function(err) {
@@ -110,14 +111,6 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
   $scope.checkAuth = function() {
     alert($ionicAuth.isAuthenticated() + " " + $ionicUser.details.name);
-
-    // usersDB.update({
-    //   id: "08dab02f-bf02-43af-bb43-fb550a91771d",
-    //   description: "New description of korgankd using update function."
-    // });
-    // usersDB.find({id: "08dab02f-bf02-43af-bb43-fb550a91771d"}).fetch().subscribe(function(msg) {
-    //   console.log(msg);
-    // });
   };
 
   $scope.saveData = function() {
@@ -185,10 +178,12 @@ angular.module('starter.controllers', ['ionic.cloud'])
   $ionicDB.connect();
   var usersDB = $ionicDB.collection('users');
 
-  usersDB.findAll({complete: true}).fetch().subscribe(function(msg) {
-    $scope.accounts = msg;
-    console.log("$scope.accounts");
-    console.log($scope.accounts);
-    console.log($ionicUser);
+  $scope.$on('$ionicView.enter', function(e) {
+    usersDB.findAll({complete: true}).fetch().subscribe(function(msg) {
+      $scope.accounts = msg;
+      console.log("$scope.accounts");
+      console.log($scope.accounts);
+      console.log($ionicUser);
+    });
   });
 });

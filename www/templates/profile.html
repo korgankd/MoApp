@@ -18,7 +18,7 @@
             </tr></table>
             <table> <tr ng-repeat="vid in user.video">
               <td>
-                <iframe width="420" height="315" src="https://www.youtube.com/v/htOroIbxiFY"></iframe>
+                <iframe width="420" height="315" src="{{vid | trusted}}"></iframe>
               </td>
             </tr></table>
           </div>
