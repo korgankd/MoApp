@@ -39,11 +39,11 @@ angular.module('starter.controllers', ['ionic.cloud'])
   $scope.doLogin = function() {
     var details = {"email": $scope.loginData.email, "password": $scope.loginData.password};
     $ionicAuth.login('basic', details).then(function() {
-      alert("Login Successful.");
       $scope.modal.hide();
       usersDB.find({id:$ionicUser.id}).fetch().subscribe(function(USER) {
         $scope.user = USER;
         $scope.user.email = $ionicUser.details.email;
+        alert("Login Successful.");
         console.log($scope.user);
       });
 
@@ -87,6 +87,41 @@ angular.module('starter.controllers', ['ionic.cloud'])
   $ionicDB.connect();
   var usersDB = $ionicDB.collection('users');
   $scope.userData = {};
+  var feedback = function (res) {
+    if (res.success === true) {
+      if($ionicAuth.isAuthenticated()) {
+        var images = $scope.user.image;
+        if(images == undefined) {
+          images = [];
+        }
+        images.push(res.data.link);
+        $scope.user.image = images;
+        usersDB.update({id: $ionicUser.id, image: images});
+        alert("Upload Successful.");
+      } else {
+        alert("You must login to upload a picture.");
+      } 
+    }
+  };
+
+  new Imgur({
+    clientid: 'cc86a8de0e7c459',
+    callback: feedback
+  });
+
+  $scope.$on('$ionicView.enter', function(e) {
+    usersDB.find({id:$ionicUser.id}).fetch().subscribe(function(USER) {
+      $scope.user = USER;
+      $scope.user.email = $ionicUser.details.email;
+    });
+  });
+
+  angular.element(document).ready(function () {
+    usersDB.find({id:$ionicUser.id}).fetch().subscribe(function(USER) {
+      $scope.user = USER;
+      $scope.user.email = $ionicUser.details.email;
+    });
+  });
 
   $ionicModal.fromTemplateUrl('templates/editprofile.html', {
     scope: $scope
@@ -101,13 +136,6 @@ angular.module('starter.controllers', ['ionic.cloud'])
   $scope.closeEdit = function() {
     $scope.modal.hide();
   };
-
-  angular.element(document).ready(function () {
-    usersDB.find({id:$ionicUser.id}).fetch().subscribe(function(USER) {
-      $scope.user = USER;
-      $scope.user.email = $ionicUser.details.email;
-    });
-  });
 
   $scope.checkAuth = function() {
     alert($ionicAuth.isAuthenticated() + " " + $ionicUser.details.name);
@@ -140,15 +168,6 @@ angular.module('starter.controllers', ['ionic.cloud'])
       if($scope.userData.description != undefined) {
         upadateData.description = $scope.userData.description;
         $scope.user.description = $scope.userData.description;
-      }
-      if($scope.userData.image != undefined) {
-        // if($scope.user.image.indexOf($scope.userData.image) >= 0) {
-        //   alert("Cannot add the same image twice.");
-        // } else {
-          images.push($scope.userData.image);
-          upadateData.image = images;
-          $scope.user.image = upadateData.image;
-        //}
       }
       if($scope.userData.video != undefined) {
         // if($scope.user.video.indexOf($scope.userData.video) >= 0) {
