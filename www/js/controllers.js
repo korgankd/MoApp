@@ -105,7 +105,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
   };
 
   new Imgur({
-    clientid: 'cc86a8de0e7c459',
+    clientid: '6d3c420180559db',
     callback: feedback
   });
 
@@ -113,6 +113,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
     usersDB.find({id:$ionicUser.id}).fetch().subscribe(function(USER) {
       $scope.user = USER;
       $scope.user.email = $ionicUser.details.email;
+      console.log($scope.user);
     });
   });
 
@@ -128,6 +129,13 @@ angular.module('starter.controllers', ['ionic.cloud'])
   }).then(function(modal) {
     $scope.modal = modal;
   });
+
+  $scope.like = function() {
+    usersDB.find({id:$ionicUser.id}).fetch().subscribe(function(USER) {
+      $scope.user = USER;
+      $scope.user.email = $ionicUser.details.email;
+    });
+  };
 
   $scope.editprofile = function() {
     $scope.modal.show();
@@ -173,7 +181,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
         // if($scope.user.video.indexOf($scope.userData.video) >= 0) {
         //   alert("Cannot add the same video twice.");
         // } else {
-          vid = $scope.userData.video.replace("watch?v=", "v/");
+          vid = $scope.userData.video.replace("watch?v=", "embed/");
           videos.push(vid);
           upadateData.video = videos;
           $scope.user.video = upadateData.video;
