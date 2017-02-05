@@ -1,6 +1,5 @@
 <ion-view view-title="Profile">
   <ion-content>
-    
         <div class="list card" ng-controller="ProfileCtrl">
           <div class="item">
             <h3><b>Username:</b> {{user.username}}<br></h3>
@@ -12,7 +11,7 @@
             <p><b>Description: </b> <br>{{user.description}} 
             </p>
             <table> <tr>
-              <td><div style="width:200px; height:200px;" class="dropzone"></div></td>
+              <!-- <td><div style="width:200px; height:200px;" class="dropzone"></div></td> -->
               <td ng-repeat="pic in user.image"> 
                 <img src="{{pic}}" style="width:200px; height:200px;"/>
               </td>
@@ -24,7 +23,7 @@
             </tr></table>
           </div>
           <div class="item tabs tabs-secondary tabs-icon-left">
-            <a class="tab-item">
+            <a class="tab-item" ng-click="like()">
               <i class="icon ion-thumbsup"></i>
               Like
             </a>
@@ -43,7 +42,8 @@
           </div>
         </div>
         <button class="button button-block button-positive" ng-click="editprofile()">Edit profile information</button>
-        <!-- <button class="button button-block button-positive" ng-click="addimage()">Add Image</button> -->
+        <button class="button button-block button-positive" ng-click="addimage()">Add Image</button>
+        <button class="button button-block button-positive" ng-click="addvideo()">Add Video</button>
         <button ng-click="checkAuth()">Check Auth</button>
         <button ng-click="logout()">Logout</button>
   </ion-content>

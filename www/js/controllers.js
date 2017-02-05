@@ -87,27 +87,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
   $ionicDB.connect();
   var usersDB = $ionicDB.collection('users');
   $scope.userData = {};
-  var feedback = function (res) {
-    if (res.success === true) {
-      if($ionicAuth.isAuthenticated()) {
-        var images = $scope.user.image;
-        if(images == undefined) {
-          images = [];
-        }
-        images.push(res.data.link);
-        $scope.user.image = images;
-        usersDB.update({id: $ionicUser.id, image: images});
-        alert("Upload Successful.");
-      } else {
-        alert("You must login to upload a picture.");
-      } 
-    }
-  };
 
-  new Imgur({
-    clientid: '6d3c420180559db',
-    callback: feedback
-  });
 
   $scope.$on('$ionicView.enter', function(e) {
     usersDB.find({id:$ionicUser.id}).fetch().subscribe(function(USER) {
@@ -130,15 +110,67 @@ angular.module('starter.controllers', ['ionic.cloud'])
     $scope.modal = modal;
   });
 
+  $ionicModal.fromTemplateUrl('templates/addimage.html', {
+    scope: $scope
+  }).then(function(modal) {
+    $scope.modal2 = modal;
+  });
+
+  $ionicModal.fromTemplateUrl('templates/addvideo.html', {
+    scope: $scope
+  }).then(function(modal) {
+    $scope.modal3 = modal;
+  });
+
   $scope.like = function() {
+    alert("like!");
     usersDB.find({id:$ionicUser.id}).fetch().subscribe(function(USER) {
       $scope.user = USER;
       $scope.user.email = $ionicUser.details.email;
     });
   };
 
+  $scope.addimage = function() {
+    if($ionicAuth.isAuthenticated()) { // just double checking...
+      $scope.modal2.show();
+      var feedback = function (res) {
+        if (res.success === true) {
+          var images = $scope.user.image;
+          if(images == undefined) {
+            images = [];
+          }
+          images.push(res.data.link);
+          $scope.user.image = images;
+          usersDB.update({id: $ionicUser.id, image: images});
+          alert("Upload Successful.");
+          $scope.closeAddImage();
+        }
+      };
+      new Imgur({
+        clientid: '6d3c420180559db',
+        callback: feedback
+      });
+    } else {
+      alert("Log in to add images.");
+    }
+  };
+
+  $scope.addvideo = function() {
+    if($ionicAuth.isAuthenticated()) { // just double checking...
+      $scope.modal3.show();
+    }
+  };
+
   $scope.editprofile = function() {
     $scope.modal.show();
+  };
+
+  $scope.closeAddVideo = function() {
+    $scope.modal3.hide();
+  };
+
+  $scope.closeAddImage = function() {
+    $scope.modal2.hide();
   };
 
   $scope.closeEdit = function() {
@@ -146,7 +178,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
   };
 
   $scope.checkAuth = function() {
-    alert($ionicAuth.isAuthenticated() + " " + $ionicUser.details.name);
+    alert($ionicAuth.isAuthenticated() + " " + $ionicUser.details.email);
   };
 
   $scope.saveData = function() {
@@ -177,20 +209,54 @@ angular.module('starter.controllers', ['ionic.cloud'])
         upadateData.description = $scope.userData.description;
         $scope.user.description = $scope.userData.description;
       }
-      if($scope.userData.video != undefined) {
-        // if($scope.user.video.indexOf($scope.userData.video) >= 0) {
-        //   alert("Cannot add the same video twice.");
-        // } else {
-          vid = $scope.userData.video.replace("watch?v=", "embed/");
-          videos.push(vid);
-          upadateData.video = videos;
-          $scope.user.video = upadateData.video;
-        //}
-      }
       $scope.modal.hide();
       usersDB.update(upadateData);
     } else {
       alert("You must be signed in to do that.");
+    }
+  };
+
+  $scope.saveImage = function() {
+    //if youre signed in and there is text in the imageurl field...
+    if($ionicAuth.isAuthenticated() && $scope.userData.imageUrl != undefined) {
+      var images = $scope.user.image; //get image array from scope.user
+      if(images == undefined) { //create array if undefined
+        images = [];
+      }
+      //if url is not contained in array, add it and update db
+      if($scope.user.image.indexOf($scope.userData.imageUrl) >= 0) {
+        alert("Cannot add the same image twice.");
+      } else {
+        images.push($scope.userData.imageUrl);
+        $scope.user.image = images;
+        usersDB.update({id: $ionicUser.id, image: images});
+        alert("Successfully added image URL.")
+        $scope.closeAddImage();
+        console.log($scope.user.image);
+      }
+    }
+  };
+
+  $scope.saveVideo = function() {
+    var vid;
+    //if youre signed in and there is text in the videourl field...
+    if($ionicAuth.isAuthenticated() && $scope.userData.videoUrl != undefined) {
+      var videos = $scope.user.video; //get video array from scope.user
+      if(videos == undefined) { //create array if undefined
+        videos = [];
+      }
+      vid = $scope.userData.videoUrl.replace("watch?v=", "embed/");
+      //if url is not contained in array, add it and update db
+      if($scope.user.video.indexOf(vid) >= 0) {
+        alert("Cannot add the same video twice.");
+      } else {
+        videos.push(vid);
+        $scope.user.video = videos;
+        usersDB.update({id: $ionicUser.id, video: videos});
+        alert("Successfully added video URL.")
+        $scope.closeAddVideo();
+        console.log($scope.user.video);
+      }
     }
   };
 
