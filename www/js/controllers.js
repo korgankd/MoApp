@@ -83,11 +83,11 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
 .controller('ProfileCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window) {
 
+  $scope.months = ["january","february","march","april","may","june","july","august","september","october","november","december"];
   $scope.user = {};
   $ionicDB.connect();
   var usersDB = $ionicDB.collection('users');
   $scope.userData = {};
-
 
   $scope.$on('$ionicView.enter', function(e) {
     usersDB.find({id:$ionicUser.id}).fetch().subscribe(function(USER) {
@@ -122,13 +122,11 @@ angular.module('starter.controllers', ['ionic.cloud'])
     $scope.modal3 = modal;
   });
 
-  $scope.like = function() {
-    alert("like!");
-    usersDB.find({id:$ionicUser.id}).fetch().subscribe(function(USER) {
-      $scope.user = USER;
-      $scope.user.email = $ionicUser.details.email;
-    });
-  };
+  $ionicModal.fromTemplateUrl('templates/calendar.html', {
+    scope: $scope
+  }).then(function(modal) {
+    $scope.modal4 = modal;
+  });
 
   $scope.addimage = function() {
     if($ionicAuth.isAuthenticated()) { // just double checking...
@@ -165,6 +163,10 @@ angular.module('starter.controllers', ['ionic.cloud'])
     $scope.modal.show();
   };
 
+  $scope.editcalendar = function() {
+    $scope.modal4.show();
+  };
+
   $scope.closeAddVideo = function() {
     $scope.modal3.hide();
   };
@@ -177,8 +179,21 @@ angular.module('starter.controllers', ['ionic.cloud'])
     $scope.modal.hide();
   };
 
+  $scope.closeCalendar = function() {
+    $scope.modal4.hide();
+  };
+
   $scope.checkAuth = function() {
     alert($ionicAuth.isAuthenticated() + " " + $ionicUser.details.email);
+  };
+
+  $scope.goToMonth = function(month) {
+    var divs = document.getElementsByClassName("month");
+    console.log(divs);
+    for(var i = 0; i < divs.length; i++){
+      divs[i].hidden = true;
+    }
+    document.getElementById(month).hidden = false;
   };
 
   $scope.saveData = function() {
@@ -258,6 +273,18 @@ angular.module('starter.controllers', ['ionic.cloud'])
         console.log($scope.user.video);
       }
     }
+  };
+
+  $scope.like = function() {
+    alert("like!");
+    usersDB.find({id:$ionicUser.id}).fetch().subscribe(function(USER) {
+      $scope.user = USER;
+      $scope.user.email = $ionicUser.details.email;
+    });
+  };
+
+  $scope.review = function() {
+    
   };
 
   $scope.logout = function() {
