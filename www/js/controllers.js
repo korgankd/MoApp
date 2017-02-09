@@ -81,10 +81,11 @@ angular.module('starter.controllers', ['ionic.cloud'])
   };
 })
 
-.controller('ProfileCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window) {
+.controller('ProfileCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window, $compile) {
 
-  $scope.months = ["january","february","march","april","may","june","july","august","september","october","november","december"];
+  var months = ["january","february","march","april","may","june","july"];
   $scope.user = {};
+  $scope.availableDates = [];
   $ionicDB.connect();
   var usersDB = $ionicDB.collection('users');
   $scope.userData = {};
@@ -194,6 +195,31 @@ angular.module('starter.controllers', ['ionic.cloud'])
       divs[i].hidden = true;
     }
     document.getElementById(month).hidden = false;
+  };
+
+  $scope.clickDate = function($event) {
+    var day = angular.element($event.currentTarget).text()
+    var month = 1 + months.indexOf($event.currentTarget.parentElement.parentElement.parentElement.parentElement.id);
+    month = month < 10 ? "0" + month : month;
+    day = day < 10 ? "0" + day : day;
+    if($event.currentTarget.classList.contains("highlight")) {
+      $event.currentTarget.classList.remove("highlight");
+      var index = $scope.availableDates.indexOf(month + day);
+      if(index > -1) {
+        $scope.availableDates.splice(index, 1);
+        console.log($scope.availableDates);
+      }
+    }
+    else{
+      $event.currentTarget.classList.add("highlight");
+      $scope.availableDates.push(month + day);
+      console.log($scope.availableDates);
+    }
+  };
+
+  $scope.saveCalendar = function() {
+    var upadateData = {id: $ionicUser.id, availableDates: $scope.availableDates};
+    usersDB.update(upadateData);
   };
 
   $scope.saveData = function() {

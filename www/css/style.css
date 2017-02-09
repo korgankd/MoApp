@@ -26,3 +26,7 @@ table.cal td {
 table.cal, table.navHead {
     width:100%;
 }
+
+.highlight {
+	background-color: yellow;
+}
