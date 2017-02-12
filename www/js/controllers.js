@@ -123,7 +123,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
     $scope.modal3 = modal;
   });
 
-  $ionicModal.fromTemplateUrl('templates/calendar.html', {
+  $ionicModal.fromTemplateUrl('templates/editcalendar.html', {
     scope: $scope
   }).then(function(modal) {
     $scope.modal4 = modal;
@@ -185,10 +185,6 @@ angular.module('starter.controllers', ['ionic.cloud'])
     }
   };
 
-  $scope.removeClass = function() {
-    document.getElementById("february").classList.remove("highlight");
-  };
-
   $scope.closeAddVideo = function() {
     $scope.modal3.hide();
   };
@@ -225,10 +221,10 @@ angular.module('starter.controllers', ['ionic.cloud'])
     day = day < 10 ? "0" + day : day;
     if($event.currentTarget.classList.contains("highlight")) {
       $event.currentTarget.classList.remove("highlight");
-      var index = $scope.availableDates.indexOf(month + day);
+      var index = $scope.user.availableDates.indexOf(month + day);
       if(index > -1) {
         $scope.user.availableDates.splice(index, 1);
-        console.log($scope.availableDates);
+        console.log($scope.user.availableDates);
       }
     }
     else{
@@ -251,15 +247,6 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
   $scope.saveData = function() {
     if($ionicAuth.isAuthenticated()) {
-      var vid;
-      var images = $scope.user.image;
-      var videos = $scope.user.video;
-      if(images == undefined) {
-        images = [];
-      }
-      if(videos == undefined) {
-        videos = [];
-      }
       var upadateData = {id: $ionicUser.id, complete: true};
       if($scope.userData.username != undefined) {
         upadateData.username = $scope.userData.username;
@@ -337,7 +324,6 @@ angular.module('starter.controllers', ['ionic.cloud'])
   };
 
   $scope.review = function() {
-    document.getElementById("february").classList.remove("highlight");
   };
 
   $scope.logout = function() {
@@ -348,6 +334,8 @@ angular.module('starter.controllers', ['ionic.cloud'])
 })
 
 .controller('AccountsCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser) {
+
+  var months = ["january","february","march","april","may","june","july"];
   $ionicDB.connect();
   var usersDB = $ionicDB.collection('users');
 
@@ -359,4 +347,65 @@ angular.module('starter.controllers', ['ionic.cloud'])
       console.log($ionicUser);
     });
   });
+
+  $ionicModal.fromTemplateUrl('templates/calendar.html', {
+    scope: $scope
+  }).then(function(modal) {
+    $scope.modal5 = modal;
+  });
+
+  $scope.goToMonth = function(month) {
+    var divs = document.getElementsByClassName("month");
+    console.log(divs);
+    for(var i = 0; i < divs.length; i++){
+      divs[i].hidden = true;
+    }
+    document.getElementById(month).hidden = false;
+  };
+
+  $scope.checkAvailability = function(id) {
+    $scope.modal5.show();
+    // find account object with this id
+    var account;
+    for(var i = 0; i < $scope.accounts.length; i++) {
+      if($scope.accounts[i].id == id) {
+        account = $scope.accounts[i];
+      }
+    }
+    // highlight dates
+    if(account.availableDates != undefined) {
+      var dates = account.availableDates;
+      console.log(dates);
+      for(var i = 0; i < dates.length; i++) {
+        var m = dates[i][0] + dates[i][1];
+        console.log(m);
+        var day = dates[i][2] + dates[i][3];
+        console.log(day);
+        var month = document.getElementById(months[+m - 1]);
+        month = month.getElementsByTagName("td");
+        for(var j = 0; j < month.length; j++) {
+          if(+angular.element(month[j]).text() == +day){
+            console.log("found date: " + m + " " + day);
+            month[j].classList.add("highlight");
+          }
+        }
+      }
+    }
+  };
+
+  $scope.closeCalendar = function() {
+    //clear all highlighted dates from modal before hiding
+    for(var i = 0; i < months.length; i++) {
+      var month = document.getElementById(months[i]);
+      if (month != null) {
+        month = month.getElementsByTagName("td");
+        for(var j = 0; j < month.length; j++) {
+          if(month[j].classList.contains("highlight")){
+            month[j].classList.remove("highlight");
+          }
+        }
+      }
+    }
+    $scope.modal5.hide();
+  };
 });

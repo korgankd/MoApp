@@ -1,0 +1,173 @@
+<ion-modal-view>
+  <ion-header-bar>
+    <h1 class="title">Calendar</h1>
+    <div class="buttons">
+      <button class="button button-positive" ng-click="closeCalendar()">Close</button>
+    </div>
+  </ion-header-bar>
+  <ion-content>
+    <div id="january" class="month" hidden>
+      <table class="navHead">
+        <tr>
+          <th>
+            <button ng-click="goToMonth('january')">Last Month</button>
+          </th>
+          <th>
+            January
+          </th>
+          <th>
+            <button ng-click="goToMonth('february')">Next Month</button>
+          </th>
+        </tr>
+      </table>
+      <table class="cal">
+        <tr>
+          <th>Sunday</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th>
+        </tr>
+        <tr>
+          <td ng-click="clickDate($event)">1</td><td ng-click="clickDate($event)">2</td><td ng-click="clickDate($event)">3</td><td ng-click="clickDate($event)">4</td><td ng-click="clickDate($event)">5</td><td ng-click="clickDate($event)">6</td><td ng-click="clickDate($event)">7</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">8</td ng-click="clickDate($event)"><td ng-click="clickDate($event)">9</td><td ng-click="clickDate($event)">10</td><td ng-click="clickDate($event)">11</td><td ng-click="clickDate($event)">12</td><td ng-click="clickDate($event)">13</td><td ng-click="clickDate($event)">14</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">15</td><td ng-click="clickDate($event)">16</td><td ng-click="clickDate($event)">17</td><td ng-click="clickDate($event)">18</td><td ng-click="clickDate($event)">19</td><td ng-click="clickDate($event)">20</td><td ng-click="clickDate($event)">21</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">22</td><td ng-click="clickDate($event)">23</td><td ng-click="clickDate($event)">24</td><td ng-click="clickDate($event)">25</td><td ng-click="clickDate($event)">26</td><td ng-click="clickDate($event)">27</td><td ng-click="clickDate($event)">28</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">29</td><td ng-click="clickDate($event)">30</td><td ng-click="clickDate($event)">31</td><td></td><td></td><td></td><td></td>
+        </tr>
+      </table>
+      <button class="button button-block button-positive" ng-click="saveCalendar()">Save</button>
+    </div>
+    <div id="february" class="month">
+      <table class="navHead">
+        <tr>
+          <td>
+            <button ng-click="goToMonth('january')">Last Month</button>
+          </td>
+          <th>
+            February
+          </th>
+          <td>
+            <button ng-click="goToMonth('march')">Next Month</button>
+          </td>
+        </tr>
+      </table>
+      <table class="cal">
+        <tr>
+          <th>Sunday</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th>
+        </tr>
+        <tr>
+          <td ng-click="clickDate($event)"></td><td ng-click="clickDate($event)"></td><td ng-click="clickDate($event)"></td><td ng-click="clickDate($event)">1</td><td ng-click="clickDate($event)">2</td><td ng-click="clickDate($event)">3</td><td ng-click="clickDate($event)">4</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">5</td><td ng-click="clickDate($event)">6</td><td ng-click="clickDate($event)">7</td><td ng-click="clickDate($event)">8</td><td ng-click="clickDate($event)">9</td><td ng-click="clickDate($event)">10</td><td ng-click="clickDate($event)">11</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">12</td><td ng-click="clickDate($event)">13</td><td ng-click="clickDate($event)">14</td><td ng-click="clickDate($event)">15</td><td ng-click="clickDate($event)">16</td><td ng-click="clickDate($event)">17</td><td ng-click="clickDate($event)">18</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">19</td><td ng-click="clickDate($event)">20</td><td ng-click="clickDate($event)">21</td><td ng-click="clickDate($event)">22</td><td ng-click="clickDate($event)">23</td><td ng-click="clickDate($event)">24</td><td ng-click="clickDate($event)">25</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">26</td><td ng-click="clickDate($event)">27</td><td ng-click="clickDate($event)">28</td><td></td><td></td><td></td><td></td>
+        </tr>
+      </table>
+      <button class="button button-block button-positive" ng-click="saveCalendar()">Save</button>
+    </div>
+    <div id="march" class="month" hidden>
+      <table class="navHead">
+        <tr>
+          <td>
+            <button ng-click="goToMonth('february')">Last Month</button>
+          </td>
+          <th>
+            March
+          </th>
+          <td>
+            <button ng-click="goToMonth('april')">Next Month</button>
+          </td>
+        </tr>
+      </table>
+      <table class="cal">
+        <tr>
+          <th>Sunday</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th>
+        </tr>
+        <tr>
+          <td ng-click="clickDate($event)"></td><td ng-click="clickDate($event)"></td><td ng-click="clickDate($event)"></td><td ng-click="clickDate($event)">1</td><td ng-click="clickDate($event)">2</td><td ng-click="clickDate($event)">3</td><td ng-click="clickDate($event)">4</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">5</td><td ng-click="clickDate($event)">6</td><td ng-click="clickDate($event)">7</td><td ng-click="clickDate($event)">8</td><td ng-click="clickDate($event)">9</td><td ng-click="clickDate($event)">10</td><td ng-click="clickDate($event)">11</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">12</td><td ng-click="clickDate($event)">13</td><td ng-click="clickDate($event)">14</td><td ng-click="clickDate($event)">15</td><td ng-click="clickDate($event)">16</td><td ng-click="clickDate($event)">17</td><td ng-click="clickDate($event)">18</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">19</td><td ng-click="clickDate($event)">20</td><td ng-click="clickDate($event)">21</td><td ng-click="clickDate($event)">22</td><td ng-click="clickDate($event)">23</td><td ng-click="clickDate($event)">24</td><td ng-click="clickDate($event)">25</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">26</td><td ng-click="clickDate($event)">27</td><td ng-click="clickDate($event)">28</td><td ng-click="clickDate($event)">29</td><td ng-click="clickDate($event)">30</td><td ng-click="clickDate($event)">31</td><td></td>
+        </tr>
+      </table>
+      <button class="button button-block button-positive" ng-click="saveCalendar()">Save</button>
+    </div>
+    <div id="april" class="month" hidden>
+      <table class="navHead">
+        <tr>
+          <td>
+            <button ng-click="goToMonth('march')">Last Month</button>
+          </td>
+          <th>
+            April
+          </th>
+          <td>
+            <button ng-click="goToMonth('may')">Next Month</button>
+          </td>
+        </tr>
+      </table>
+      <table class="cal">
+        <tr>
+          <th>Sunday</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th>
+        </tr>
+        <tr>
+          <td ng-click="clickDate($event)"></td><td ng-click="clickDate($event)"></td><td ng-click="clickDate($event)"></td><td ng-click="clickDate($event)"></td><td ng-click="clickDate($event)"></td><td ng-click="clickDate($event)"></td><td ng-click="clickDate($event)">1</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">2</td><td ng-click="clickDate($event)">3</td><td ng-click="clickDate($event)">4</td><td ng-click="clickDate($event)">5</td><td ng-click="clickDate($event)">6</td><td ng-click="clickDate($event)">7</td><td ng-click="clickDate($event)">8</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">9</td><td ng-click="clickDate($event)">10</td><td ng-click="clickDate($event)">11</td><td ng-click="clickDate($event)">12</td><td ng-click="clickDate($event)">13</td><td ng-click="clickDate($event)">14</td><td ng-click="clickDate($event)">15</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">16</td><td ng-click="clickDate($event)">17</td><td ng-click="clickDate($event)">18</td><td ng-click="clickDate($event)">19</td><td ng-click="clickDate($event)">20</td><td ng-click="clickDate($event)">21</td><td ng-click="clickDate($event)">22</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">23</td><td ng-click="clickDate($event)">24</td><td ng-click="clickDate($event)">25</td><td ng-click="clickDate($event)">26</td><td ng-click="clickDate($event)">27</td><td ng-click="clickDate($event)">28</td><td ng-click="clickDate($event)">29</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">30</td><td></td><td></td><td></td><td></td><td></td><td></td>
+        </tr>
+      </table>
+      <button class="button button-block button-positive" ng-click="saveCalendar()">Save</button>
+    </div>
+
+    <div id="may" class="month" hidden>
+      <table class="navHead">
+        <tr>
+          <td>
+            <button ng-click="goToMonth('april')">Last Month</button>
+          </td>
+          <th>
+            May
+          </th>
+          <td>
+            <button ng-click="goToMonth('may')">Next Month</button>
+          </td>
+        </tr>
+      </table>
+      <table class="cal">
+        <tr>
+          <th>Sunday</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th>
+        </tr>
+        <tr>
+          <td ng-click="clickDate($event)"></td><td ng-click="clickDate($event)">1</td><td ng-click="clickDate($event)">2</td><td ng-click="clickDate($event)">3</td><td ng-click="clickDate($event)">4</td><td ng-click="clickDate($event)">5</td><td ng-click="clickDate($event)">6</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">7</td><td ng-click="clickDate($event)">8</td><td ng-click="clickDate($event)">9</td><td ng-click="clickDate($event)">10</td><td ng-click="clickDate($event)">11</td><td ng-click="clickDate($event)">12</td><td ng-click="clickDate($event)">13</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">14</td><td ng-click="clickDate($event)">15</td><td ng-click="clickDate($event)">16</td><td ng-click="clickDate($event)">17</td><td ng-click="clickDate($event)">18</td><td ng-click="clickDate($event)">19</td><td ng-click="clickDate($event)">20</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">21</td><td ng-click="clickDate($event)">22</td><td ng-click="clickDate($event)">23</td><td ng-click="clickDate($event)">24</td><td ng-click="clickDate($event)">25</td><td ng-click="clickDate($event)">26</td><td ng-click="clickDate($event)">27</td>
+        </tr><tr>
+          <td ng-click="clickDate($event)">28</td><td ng-click="clickDate($event)">29</td><td ng-click="clickDate($event)">30</td><td ng-click="clickDate($event)">31</td><td></td><td></td><td></td>
+        </tr>
+      </table>
+      <button class="button button-block button-positive" ng-click="saveCalendar()">Save</button>
+    </div>
+  </ion-content>
+</ion-modal-view>
