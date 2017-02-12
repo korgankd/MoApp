@@ -83,7 +83,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
 .controller('ProfileCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window, $compile) {
 
-  var months = ["january","february","march","april","may","june","july"];
+  var months = ["january","february","march","april","may","june","july","august","september","october","november","december"];
   $scope.user = {};
   //$scope.availableDates = [];
   $ionicDB.connect();
@@ -207,7 +207,6 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
   $scope.goToMonth = function(month) {
     var divs = document.getElementsByClassName("month");
-    console.log(divs);
     for(var i = 0; i < divs.length; i++){
       divs[i].hidden = true;
     }
@@ -335,7 +334,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
 .controller('AccountsCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser) {
 
-  var months = ["january","february","march","april","may","june","july"];
+  var months = ["january","february","march","april","may","june","july","august","september","october","november","december"];
   $ionicDB.connect();
   var usersDB = $ionicDB.collection('users');
 
@@ -356,7 +355,6 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
   $scope.goToMonth = function(month) {
     var divs = document.getElementsByClassName("month");
-    console.log(divs);
     for(var i = 0; i < divs.length; i++){
       divs[i].hidden = true;
     }
