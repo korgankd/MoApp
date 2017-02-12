@@ -1,6 +1,10 @@
 <ion-view view-title="Browse">
   <ion-content>
-  <br>
+    <ion-refresher
+      pulling-text="Pull to refresh..."
+      on-refresh="doRefresh()">
+    </ion-refresher>
+    <br>
     <ion-list>
       <ion-item ng-repeat="account in accounts" ng-click="">
         <div class="list card">

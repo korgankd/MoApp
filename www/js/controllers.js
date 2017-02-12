@@ -44,6 +44,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
         $scope.user = USER;
         $scope.user.email = $ionicUser.details.email;
         alert("Login Successful.");
+        $window.location.reload();
         console.log($scope.user);
       });
 
@@ -81,28 +82,30 @@ angular.module('starter.controllers', ['ionic.cloud'])
   };
 })
 
-.controller('ProfileCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window, $compile) {
+.controller('ProfileCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window) {
 
   var months = ["january","february","march","april","may","june","july","august","september","october","november","december"];
   $scope.user = {};
-  //$scope.availableDates = [];
   $ionicDB.connect();
   var usersDB = $ionicDB.collection('users');
   $scope.userData = {};
 
   $scope.$on('$ionicView.enter', function(e) {
-    usersDB.find({id:$ionicUser.id}).fetch().subscribe(function(USER) {
-      $scope.user = USER;
-      $scope.user.email = $ionicUser.details.email;
-      console.log($scope.user);
-    });
+    if($ionicAuth.isAuthenticated()) {
+      usersDB.find({id:$ionicUser.id}).fetch().subscribe(function(USER) {
+        $scope.user = USER;
+        $scope.user.email = $ionicUser.details.email;
+      }); 
+    }
   });
 
-  angular.element(document).ready(function () {
-    usersDB.find({id:$ionicUser.id}).fetch().subscribe(function(USER) {
-      $scope.user = USER;
-      $scope.user.email = $ionicUser.details.email;
-    });
+  angular.element(document).ready(function() {
+    if($ionicAuth.isAuthenticated()) {
+      usersDB.find({id:$ionicUser.id}).fetch().subscribe(function(USER) {
+        $scope.user = USER;
+        $scope.user.email = $ionicUser.details.email;
+      }); 
+    }
   });
 
   $ionicModal.fromTemplateUrl('templates/editprofile.html', {
@@ -128,6 +131,11 @@ angular.module('starter.controllers', ['ionic.cloud'])
   }).then(function(modal) {
     $scope.modal4 = modal;
   });
+
+  $scope.doRefresh = function() {
+    $window.location.reload();
+    $scope.$broadcast('scroll.refreshComplete');
+  };
 
   $scope.addimage = function() {
     if($ionicAuth.isAuthenticated()) { // just double checking...
@@ -316,19 +324,18 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
   $scope.like = function() {
     alert("like!");
-    usersDB.find({id:$ionicUser.id}).fetch().subscribe(function(USER) {
-      $scope.user = USER;
-      $scope.user.email = $ionicUser.details.email;
-    });
+
   };
 
   $scope.review = function() {
+    console.log($scope.user);
   };
 
   $scope.logout = function() {
     $ionicAuth.logout();
     $scope.user = {name:"", username:"", email:"", description:"", location:"", image:""};
     alert("Successfully logged out.");
+    $window.location.reload();
   };
 })
 
