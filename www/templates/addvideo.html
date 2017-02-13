@@ -10,7 +10,11 @@
       <div class="list">
         <label class="item item-input">
           <span class="input-label">Add Video URL:</span>
-          <input type="text" ng-model="userData.videoUrl">
+          <input ng-change="validateVideoUrl()" type="text" ng-model="userData.videoUrl" id="videoInput">
+          <br>
+        </label>
+        <label class="item">
+          <span class="red" id="validText">{{validate.text}}</span>
         </label>
         <label class="item">
           <button class="button button-block button-positive" type="submit">Save URL</button>

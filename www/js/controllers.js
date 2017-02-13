@@ -163,9 +163,9 @@ angular.module('starter.controllers', ['ionic.cloud'])
   };
 
   $scope.addvideo = function() {
-    if($ionicAuth.isAuthenticated()) { // just double checking...
+    //if($ionicAuth.isAuthenticated()) { // just double checking...
       $scope.modal3.show();
-    }
+    //}
   };
 
   $scope.editprofile = function() {
@@ -307,24 +307,59 @@ angular.module('starter.controllers', ['ionic.cloud'])
       if(videos == undefined) { //create array if undefined
         videos = [];
       }
-      vid = $scope.userData.videoUrl.replace("watch?v=", "embed/");
-      //if url is not contained in array, add it and update db
-      if($scope.user.video.indexOf(vid) >= 0) {
-        alert("Cannot add the same video twice.");
-      } else {
-        videos.push(vid);
-        $scope.user.video = videos;
-        usersDB.update({id: $ionicUser.id, video: videos});
-        alert("Successfully added video URL.")
-        $scope.closeAddVideo();
-        console.log($scope.user.video);
+      if($scope.validateVideoUrl()) {
+        vid = $scope.validate.newUrl;
+        //if url is not contained in array, add it and update db
+        if($scope.user.video.indexOf(vid) >= 0) {
+          alert("Cannot add the same video twice.");
+        } else {
+          videos.push(vid);
+          $scope.user.video = videos;
+          usersDB.update({id: $ionicUser.id, video: videos});
+          alert("Successfully added video URL.")
+          $scope.closeAddVideo();
+          console.log($scope.user.video);
+        }
       }
+    } else {
+      console.log($scope.validate.url);
     }
   };
 
+  $scope.validateVideoUrl = function() {
+    var url = $scope.userData.videoUrl;
+    var newUrl;
+    var textCL = document.getElementById("validText").classList;
+    if (url) {
+      var regExpYT = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
+      var regExpVim = /https:\/\/(www\.)?vimeo.com\/(\d+)($|\/)/;
+      var matchYT = url.match(regExpYT);
+      var matchVIM = url.match(regExpVim)
+      if (matchYT && matchYT[2].length == 11) {
+        // Do anything for being valid
+        // if need to change the url to embed url then use below line
+        newUrl = 'https://www.youtube.com/embed/' + matchYT[2];
+        $scope.validate = {text:"Valid YouTube URL.",check:true, url: newUrl};
+        textCL.add("green");
+        textCL.toggle("red", textCL.contains("red")); // remove if contains red
+        return true;
+      } else if(matchVIM && matchYT[2].length == 9) {
+        newUrl = 'https://player.vimeo.com/video/' + matchVIM[2];
+        $scope.validate = {text:"Valid Vimeo URL.",check:true, url: newUrl};
+        textCL.add("green");
+        textCL.toggle("red", textCL.contains("red")); // remove if contains red
+        return true;
+      } else {
+        $scope.validate = {text:"Invalid Video URL.",check:false, url: ""};
+        textCL.add("red");
+        textCL.toggle("green", textCL.contains("green")); // remove if contains red
+        return false;
+      }
+    }
+  }
+
   $scope.like = function() {
     alert("like!");
-
   };
 
   $scope.review = function() {
