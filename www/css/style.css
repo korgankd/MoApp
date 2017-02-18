@@ -38,3 +38,30 @@ table.cal, table.navHead {
 .green {
 	color: green;
 }
+
+table.search {
+	vertical-align: center;
+	text-align: center;
+	width: 100%;
+}
+
+table.search tr{
+}
+
+table.search td {
+    border: 0px solid black;
+    font-size: 16px;
+}
+
+input.zip {
+    margin: 8px 0;
+    border: 1px solid black;
+    border-radius: 40px;
+    box-sizing: border-box;
+	text-align: center;
+}
+
+img {
+	width: 300px;
+	height: 300px;
+}

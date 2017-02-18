@@ -14,15 +14,14 @@
       <div class="item item-body">
         <p><b>Description: </b> <br>{{user.description}} 
         </p>
-        <table> <tr>
-          <!-- <td><div style="width:200px; height:200px;" class="dropzone"></div></td> -->
+        <table> <tr id="picsRow">
           <td ng-repeat="pic in user.image"> 
-            <img src="{{pic}}" style="width:200px; height:200px;"/>
+            <img class="pics" src="{{pic}}" style="width:200px; height:200px;"/>
           </td>
         </tr></table>
-        <table> <tr ng-repeat="vid in user.video">
+        <table id="vidsTable"> <tr ng-repeat="vid in user.video">
           <td>
-            <iframe src="{{vid | trusted}}" width="640" height="272" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            <iframe class="vids" src="{{vid | trusted}}" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
           </td>
         </tr></table>
       </div>
