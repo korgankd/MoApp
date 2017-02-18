@@ -52,6 +52,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
     });
 
   };
+
   $scope.doRegister = function() {
     if($ionicAuth.isAuthenticated()) {
       $ionicAuth.logout();
@@ -132,12 +133,12 @@ angular.module('starter.controllers', ['ionic.cloud'])
     scope: $scope,
     animation: 'slide-in-up'
   }).then(function(modal) {
-    $scope.modal5 = modal;
+    $scope.modal6 = modal;
   });
 
   $scope.showImage = function(imgUrl) {
     $scope.imageSrc = imgUrl;
-    $scope.modal5.show();
+    $scope.modal6.show();
   };
 
   $scope.doRefresh = function() {
@@ -277,8 +278,8 @@ angular.module('starter.controllers', ['ionic.cloud'])
   };
 
   $scope.closeImage = function() {
-    $scope.modal5.hide();
-  }
+    $scope.modal6.hide();
+  };
 
   $scope.checkAuth = function() {
     alert($ionicAuth.isAuthenticated() + " " + $ionicUser.details.email);
@@ -468,6 +469,18 @@ angular.module('starter.controllers', ['ionic.cloud'])
     $scope.modal5 = modal;
   });
 
+  $ionicModal.fromTemplateUrl('templates/viewimage.html', {
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function(modal) {
+    $scope.modal6 = modal;
+  });
+
+  $scope.showImage = function(imgUrl) {
+    $scope.imageSrc = imgUrl;
+    $scope.modal6.show();
+  };
+
   $scope.doRefresh = function() {
     usersDB.findAll({complete: true}).fetch().subscribe(function(msg) {
       $scope.accounts = msg;
@@ -529,5 +542,9 @@ angular.module('starter.controllers', ['ionic.cloud'])
       }
     }
     $scope.modal5.hide();
+  };
+
+  $scope.closeImage = function() {
+    $scope.modal6.hide();
   };
 });
