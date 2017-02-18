@@ -134,20 +134,19 @@ angular.module('starter.controllers', ['ionic.cloud'])
     if($scope.user.image) {
       imgs = $scope.user.image;
       var displayedImages = document.getElementsByClassName("pics");
-      if(displayedImages) {
+      if(displayedImages) { //if there are already pictures on page
         var displayedImageURLs = [];
         for (var i = 0; i < displayedImages.length; i++){
           displayedImageURLs[i] = displayedImages[i].src;
         }
         for (var i = 0; i < imgs.length; i++) {
-          if(displayedImageURLs.indexOf(imgs[i]) < 0){  //imgs[i] is not found on page
-            var td = document.createElement("td");      //create img element for it
-            var newImgElement = document.createElement("img");
-            newImgElement.src = imgs[i];
-            newImgElement.style = "width:200px; height:200px;";
-            document.getElementById("picsRow").appendChild(td);
-            td.appendChild(newImgElement);
+          if(displayedImageURLs.indexOf(imgs[i]) < 0){  //imgs[i] is not found
+            $scope.addImageElement(imgs[i]);
           }
+        }
+      } else {
+        for (var i = 0; i < imgs.length; i++) {
+          $scope.addImageElement(imgs[i]);
         }
       }
     }
@@ -158,25 +157,39 @@ angular.module('starter.controllers', ['ionic.cloud'])
         var displayedVideoURLs = [];
         for (var i = 0; i < displayedVideos.length; i++){ //change array of elemetnts
           displayedVideoURLs[i] = displayedVideos[i].src; //to array of vid urls
-          console.log(displayedVideoURLs[i]);
-          console.log(displayedVideos[i]);
         }
         for (var i = 0; i < vids.length; i++) {
           if(displayedVideoURLs.indexOf(vids[i]) < 0){  //vids[i] is not found on page
-            var tr = document.createElement("tr");      //create img element for it
-            var td = document.createElement("td");
-            tr.appendChild(td);
-            var newVidElement = document.createElement("iframe");
-            newVidElement.src = vids[i];
-            td.appendChild(newVidElement);
-            document.getElementById("vidsTable").appendChild(tr);
-            console.log(tr);
+            $scope.addVideoElement(vids[i]);
             console.log("added vid row to table");
           }
+        }
+      } else {
+        for (var i = 0; i < vids.length; i++) { 
+          $scope.addVideoElement(vids[i]);
         }
       }
     }
     $scope.$broadcast('scroll.refreshComplete');
+  };
+
+  $scope.addImageElement = function(imgUrl) {
+    var td = document.createElement("td");
+    var newImgElement = document.createElement("img");
+    newImgElement.src = imgUrl;
+    newImgElement.style = "width:200px; height:200px;";
+    document.getElementById("picsRow").appendChild(td);
+    td.appendChild(newImgElement);
+  };
+
+  $scope.addVideoElement = function(vidUrl) {
+    var tr = document.createElement("tr");
+    var td = document.createElement("td");
+    tr.appendChild(td);
+    var newVidElement = document.createElement("iframe");
+    newVidElement.src = vidUrl;
+    td.appendChild(newVidElement);
+    document.getElementById("vidsTable").appendChild(tr);
   };
 
   $scope.addimage = function() {
@@ -374,9 +387,11 @@ angular.module('starter.controllers', ['ionic.cloud'])
     var textCL = document.getElementById("validText").classList;
     if (url) {
       var regExpYT = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
-      var regExpVim = /https:\/\/(www\.)?vimeo.com\/(\d+)($|\/)/;
+      var regExpVim = /^(http\:\/\/|https\:\/\/)?(www\.)?(vimeo\.com\/)([0-9]+)$/;
       var matchYT = url.match(regExpYT);
-      var matchVIM = url.match(regExpVim)
+      var matchVIM = url.match(regExpVim);
+      console.log(matchVIM);
+      console.log(matchYT);
       if (matchYT && matchYT[2].length == 11) {
         // Do anything for being valid
         // if need to change the url to embed url then use below line
@@ -385,8 +400,8 @@ angular.module('starter.controllers', ['ionic.cloud'])
         textCL.add("green");
         textCL.toggle("red", textCL.contains("red")); // remove if contains red
         return true;
-      } else if(matchVIM && matchYT[2].length == 9) {
-        newUrl = 'https://player.vimeo.com/video/' + matchVIM[2];
+      } else if(matchVIM && matchVIM[4].length == 9) {
+        newUrl = 'https://player.vimeo.com/video/' + matchVIM[4];
         $scope.validate = {text:"Valid Vimeo URL.",check:true, url: newUrl};
         textCL.add("green");
         textCL.toggle("red", textCL.contains("red")); // remove if contains red
@@ -394,11 +409,11 @@ angular.module('starter.controllers', ['ionic.cloud'])
       } else {
         $scope.validate = {text:"Invalid Video URL.",check:false, url: ""};
         textCL.add("red");
-        textCL.toggle("green", textCL.contains("green")); // remove if contains red
+        textCL.toggle("green", textCL.contains("green")); // remove if contains green
         return false;
       }
     }
-  }
+  };
 
   $scope.like = function() {
     alert("like!");
@@ -438,7 +453,6 @@ angular.module('starter.controllers', ['ionic.cloud'])
   });
 
   $scope.doRefresh = function() {
-    //$window.location.reload();
     usersDB.findAll({complete: true}).fetch().subscribe(function(msg) {
       $scope.accounts = msg;
       console.log("$scope.accounts");
@@ -466,15 +480,13 @@ angular.module('starter.controllers', ['ionic.cloud'])
       }
     }
     // highlight dates
-    if(account.availableDates != undefined) {
+    if(account.availableDates) {
       console.log("if");
       var dates = account.availableDates;
       console.log(dates);
       for(var i = 0; i < dates.length; i++) {
         var m = dates[i][0] + dates[i][1];
-        console.log(m);
         var day = dates[i][2] + dates[i][3];
-        console.log(day);
         var month = document.getElementById(months[+m - 1]);
         month = month.getElementsByTagName("td");
         for(var j = 0; j < month.length; j++) {
