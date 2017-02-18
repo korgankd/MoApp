@@ -16,7 +16,7 @@
         </p>
         <table> <tr id="picsRow">
           <td ng-repeat="pic in user.image"> 
-            <img class="pics" src="{{pic}}" style="width:200px; height:200px;"/>
+            <img class="pics" src="{{pic}}" style="width:200px; height:200px;" ng-click="showImage(pic)"/>
           </td>
         </tr></table>
         <table id="vidsTable"> <tr ng-repeat="vid in user.video">

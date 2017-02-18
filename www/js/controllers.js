@@ -128,6 +128,18 @@ angular.module('starter.controllers', ['ionic.cloud'])
     $scope.modal4 = modal;
   });
 
+  $ionicModal.fromTemplateUrl('templates/viewimage.html', {
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function(modal) {
+    $scope.modal5 = modal;
+  });
+
+  $scope.showImage = function(imgUrl) {
+    $scope.imageSrc = imgUrl;
+    $scope.modal5.show();
+  };
+
   $scope.doRefresh = function() {
     var imgs = [];
     var vids = [];
@@ -263,6 +275,10 @@ angular.module('starter.controllers', ['ionic.cloud'])
   $scope.closeCalendar = function() {
     $scope.modal4.hide();
   };
+
+  $scope.closeImage = function() {
+    $scope.modal5.hide();
+  }
 
   $scope.checkAuth = function() {
     alert($ionicAuth.isAuthenticated() + " " + $ionicUser.details.email);
