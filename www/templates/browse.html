@@ -16,13 +16,13 @@
           <div class="item item-body">
             <p><b>Description:</b> {{account.description}}
             </p>
-            <div style="width:300px; height: 300px;">
+            <ion-scroll direction="x">
               <table> <tr>
                 <td ng-repeat="pic in account.image"> 
                   <img class="pics" src="{{pic}}" ng-click="showImage(pic)"/>
                 </td>
               </tr></table>
-            </div>
+            </ion-scroll>
             <table  class="vids"> <tr ng-repeat="vid in account.video">
               <td><iframe src="{{vid | trusted}}" width="100%" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
               </td>

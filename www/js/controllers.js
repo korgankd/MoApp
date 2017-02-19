@@ -6,7 +6,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
     };
 }])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window) {
+.controller('AppCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window, $ionicLoading) {
 
   $ionicDB.connect();
   var usersDB = $ionicDB.collection('users');
@@ -26,7 +26,6 @@ angular.module('starter.controllers', ['ionic.cloud'])
   }).then(function(modal) {
     $scope.modal = modal;
   });
-  console.log($scope);
 
   $scope.closeLogin = function() {
     $scope.modal.hide();
@@ -37,6 +36,10 @@ angular.module('starter.controllers', ['ionic.cloud'])
   };
 
   $scope.doLogin = function() {
+    if($ionicAuth.isAuthenticated()) {
+      $ionicAuth.logout();
+    }
+    $scope.show();
     var details = {"email": $scope.loginData.email, "password": $scope.loginData.password};
     $ionicAuth.login('basic', details).then(function() {
       $scope.modal.hide();
@@ -45,12 +48,10 @@ angular.module('starter.controllers', ['ionic.cloud'])
         $scope.user.email = $ionicUser.details.email;
         alert("Login Successful.");
         $window.location.reload();
-        console.log($scope.user);
       });
     }, function(err) {
       console.log(err);
     });
-
   };
 
   $scope.doRegister = function() {
@@ -77,9 +78,15 @@ angular.module('starter.controllers', ['ionic.cloud'])
       }
     });
   };
+
+  $scope.show = function() {
+    $ionicLoading.show({
+      template: '<p>Loading...</p><ion-spinner></ion-spinner>'
+    });
+  };
 })
 
-.controller('ProfileCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window) {
+.controller('ProfileCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window, $compile, $ionicLoading) {
 
   var months = ["january","february","march","april","may","june","july","august","september","october","november","december"];
   $scope.user = {};
@@ -93,6 +100,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
         $scope.user = USER;
         $scope.user.email = $ionicUser.details.email;
       }); 
+      $scope.doRefresh();
     }
   });
 
@@ -126,19 +134,25 @@ angular.module('starter.controllers', ['ionic.cloud'])
   $ionicModal.fromTemplateUrl('templates/editcalendar.html', {
     scope: $scope
   }).then(function(modal) {
-    $scope.modal4 = modal;
+    $scope.editCalendarModal = modal;
   });
 
   $ionicModal.fromTemplateUrl('templates/viewimage.html', {
     scope: $scope,
     animation: 'slide-in-up'
   }).then(function(modal) {
-    $scope.modal6 = modal;
+    $scope.viewImageModal = modal;
   });
+
+  $scope.show = function() {
+    $ionicLoading.show({
+      template: '<p>Loading...</p><ion-spinner></ion-spinner>'
+    });
+  };
 
   $scope.showImage = function(imgUrl) {
     $scope.imageSrc = imgUrl;
-    $scope.modal6.show();
+    $scope.viewImageModal.show();
   };
 
   $scope.doRefresh = function() {
@@ -153,13 +167,26 @@ angular.module('starter.controllers', ['ionic.cloud'])
           displayedImageURLs[i] = displayedImages[i].src;
         }
         for (var i = 0; i < imgs.length; i++) {
-          if(displayedImageURLs.indexOf(imgs[i]) < 0){  //imgs[i] is not found
+          if(displayedImageURLs.indexOf(imgs[i]) < 0) {  //imgs[i] is not found
             $scope.addImageElement(imgs[i]);
+          }
+        }
+        for (var i = displayedImageURLs.length-1; i >=0; i--) {
+          if(imgs.indexOf(displayedImageURLs[i]) < 0) { //img displayed not in array
+            displayedImages[i].parentElement.removeChild(displayedImages[i]);
           }
         }
       } else {
         for (var i = 0; i < imgs.length; i++) {
           $scope.addImageElement(imgs[i]);
+        }
+      }
+    } else { //$scope.user.image is empty, remove image elements on page
+      var displayedImages = document.getElementsByClassName("pics");
+      if(displayedImages) {
+        //removing items, count backwards from the top
+        for(var i = displayedImages.length-1; i >= 0; i--) {
+          displayedImages[i].parentElement.removeChild(displayedImages[i]);
         }
       }
     }
@@ -174,12 +201,23 @@ angular.module('starter.controllers', ['ionic.cloud'])
         for (var i = 0; i < vids.length; i++) {
           if(displayedVideoURLs.indexOf(vids[i]) < 0){  //vids[i] is not found on page
             $scope.addVideoElement(vids[i]);
-            console.log("added vid row to table");
+          }
+        }
+        for (var i = displayedVideoURLs.length-1; i >=0; i--) {
+          if(vids.indexOf(displayedVideoURLs[i]) < 0) { //vid displayed not in array
+            displayedVideos[i].parentElement.removeChild(displayedVideos[i]);
           }
         }
       } else {
         for (var i = 0; i < vids.length; i++) { 
           $scope.addVideoElement(vids[i]);
+        }
+      }
+    } else { //$scope.user.video is empty, remove image elements on page
+      var displayedVideos = document.getElementsByClassName("vids");
+      if(displayedVideos) {
+        for(var i = displayedVideos.length-1; i >= 0; i--) {
+          displayedVideos[i].parentElement.removeChild(displayedVideos[i]);
         }
       }
     }
@@ -188,11 +226,12 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
   $scope.addImageElement = function(imgUrl) {
     var td = document.createElement("td");
+    var html = "<img src='"+imgUrl+"' style='width:200px; height:200px;' ng-click='showImage(\""+imgUrl+"\")' />";
     var newImgElement = document.createElement("img");
     newImgElement.src = imgUrl;
     newImgElement.style = "width:200px; height:200px;";
     document.getElementById("picsRow").appendChild(td);
-    td.appendChild(newImgElement);
+    angular.element(td).append($compile(html)($scope));
   };
 
   $scope.addVideoElement = function(vidUrl) {
@@ -217,7 +256,9 @@ angular.module('starter.controllers', ['ionic.cloud'])
           images.push(res.data.link);
           $scope.user.image = images;
           usersDB.update({id: $ionicUser.id, image: images});
+          $scope.addImageElement(res.data.link);
           alert("Upload Successful.");
+          $scope.hide();
           $scope.closeAddImage();
         }
       };
@@ -241,12 +282,12 @@ angular.module('starter.controllers', ['ionic.cloud'])
   };
 
   $scope.editcalendar = function() {
-    $scope.modal4.show();
+    $scope.editCalendarModal.show();
     //highlight shit on the list... not very efficient, fix later
     var dates = $scope.user.availableDates;
     console.log(dates);
     for(var i = 0; i < dates.length; i++) {
-      var m = dates[i][0] + dates[i][1];
+      var m = dates[i][0] + dates[i][1]; //create month/day var for number on dates array
       console.log(m);
       var day = dates[i][2] + dates[i][3];
       console.log(day);
@@ -255,6 +296,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
       for(var j = 0; j < month.length; j++) {
         if(+angular.element(month[j]).text() == +day){
           console.log("found date: " + m + " " + day);
+          console.log(month[j]);
           month[j].classList.add("highlight");
         }
       }
@@ -274,11 +316,15 @@ angular.module('starter.controllers', ['ionic.cloud'])
   };
 
   $scope.closeCalendar = function() {
-    $scope.modal4.hide();
+    $scope.editCalendarModal.hide();
   };
 
   $scope.closeImage = function() {
-    $scope.modal6.hide();
+    $scope.viewImageModal.hide();
+  };
+
+  $scope.hide = function(){
+    $ionicLoading.hide();
   };
 
   $scope.checkAuth = function() {
@@ -286,7 +332,8 @@ angular.module('starter.controllers', ['ionic.cloud'])
   };
 
   $scope.goToMonth = function(month) {
-    var divs = document.getElementsByClassName("month");
+    var calendar = document.getElementById("calendar");
+    var divs = calendar.getElementsByClassName("month");
     for(var i = 0; i < divs.length; i++){
       divs[i].hidden = true;
     }
@@ -318,7 +365,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
       var upadateData = {id: $ionicUser.id, availableDates: $scope.user.availableDates};
       usersDB.update(upadateData);
       alert("Availability Saved Successfully.");
-      $scope.modal4.hide();
+      $scope.editCalendarModal.hide();
     } else {
       alert("You must be signed in to do that.");
     }
@@ -352,7 +399,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
   $scope.saveImage = function() {
     //if youre signed in and there is text in the imageurl field...
-    if($ionicAuth.isAuthenticated() && $scope.userData.imageUrl != undefined) {
+    if($ionicAuth.isAuthenticated() && $scope.userData.imageUrl) {
       var images = $scope.user.image; //get image array from scope.user
       if(images == undefined) { //create array if undefined
         images = [];
@@ -363,6 +410,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
       } else {
         images.push($scope.userData.imageUrl);
         $scope.user.image = images;
+        $scope.addImageElement($scope.userData.imageUrl);
         usersDB.update({id: $ionicUser.id, image: images});
         alert("Successfully added image URL.");
         $scope.closeAddImage();
@@ -388,8 +436,9 @@ angular.module('starter.controllers', ['ionic.cloud'])
           videos.push(vid);
           $scope.user.video = videos;
           usersDB.update({id: $ionicUser.id, video: videos});
-          alert("Successfully added video URL.")
-          $scope.closeAddVideo();
+          $scope.addVideoElement(vid);
+          alert("Successfully added video URL.");
+          $scope.closeAddVideo(vid);
           console.log($scope.user.video);
         }
       }
@@ -407,8 +456,6 @@ angular.module('starter.controllers', ['ionic.cloud'])
       var regExpVim = /^(http\:\/\/|https\:\/\/)?(www\.)?(vimeo\.com\/)([0-9]+)$/;
       var matchYT = url.match(regExpYT);
       var matchVIM = url.match(regExpVim);
-      console.log(matchVIM);
-      console.log(matchYT);
       if (matchYT && matchYT[2].length == 11) {
         // Do anything for being valid
         // if need to change the url to embed url then use below line
@@ -450,49 +497,44 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
 .controller('AccountsCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window) {
 
-  var months = ["january","february","march","april","may","june","july","august","september","october","november","december"];
+  var months1 = ["january1","february1","march1","april1","may1","june1","july1","august1","september1","october1","november1","december1"];
   $ionicDB.connect();
   var usersDB = $ionicDB.collection('users');
 
   $scope.$on('$ionicView.enter', function(e) {
     usersDB.findAll({complete: true}).fetch().subscribe(function(msg) {
       $scope.accounts = msg;
-      console.log("$scope.accounts");
-      console.log($scope.accounts);
-      console.log($ionicUser);
     });
   });
 
   $ionicModal.fromTemplateUrl('templates/calendar.html', {
     scope: $scope
   }).then(function(modal) {
-    $scope.modal5 = modal;
+    $scope.calendarModal = modal;
   });
 
   $ionicModal.fromTemplateUrl('templates/viewimage.html', {
     scope: $scope,
     animation: 'slide-in-up'
   }).then(function(modal) {
-    $scope.modal6 = modal;
+    $scope.viewImageModal = modal;
   });
 
   $scope.showImage = function(imgUrl) {
     $scope.imageSrc = imgUrl;
-    $scope.modal6.show();
+    $scope.viewImageModal.show();
   };
 
   $scope.doRefresh = function() {
     usersDB.findAll({complete: true}).fetch().subscribe(function(msg) {
       $scope.accounts = msg;
-      console.log("$scope.accounts");
-      console.log($scope.accounts);
-      console.log($ionicUser);
     });
     $scope.$broadcast('scroll.refreshComplete');
   };
 
   $scope.goToMonth = function(month) {
-    var divs = document.getElementsByClassName("month");
+    var calendar = document.getElementById("calendar1");
+    var divs = calendar.getElementsByClassName("month");
     for(var i = 0; i < divs.length; i++){
       divs[i].hidden = true;
     }
@@ -500,7 +542,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
   };
 
   $scope.checkAvailability = function(id) {
-    $scope.modal5.show();
+    $scope.calendarModal.show();
     // find account object with this id
     var account;
     for(var i = 0; i < $scope.accounts.length; i++) {
@@ -510,17 +552,18 @@ angular.module('starter.controllers', ['ionic.cloud'])
     }
     // highlight dates
     if(account.availableDates) {
-      console.log("if");
       var dates = account.availableDates;
       console.log(dates);
       for(var i = 0; i < dates.length; i++) {
         var m = dates[i][0] + dates[i][1];
         var day = dates[i][2] + dates[i][3];
-        var month = document.getElementById(months[+m - 1]);
+        console.log(months1[+m - 1]);
+        var month = document.getElementById(months1[+m - 1]);
         month = month.getElementsByTagName("td");
         for(var j = 0; j < month.length; j++) {
           if(+angular.element(month[j]).text() == +day){
             console.log("found date: " + m + " " + day);
+            console.log(month[j]);
             month[j].classList.add("highlight");
           }
         }
@@ -530,8 +573,8 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
   $scope.closeCalendar = function() {
     //clear all highlighted dates from modal before hiding
-    for(var i = 0; i < months.length; i++) {
-      var month = document.getElementById(months[i]);
+    for(var i = 0; i < months1.length; i++) {
+      var month = document.getElementById(months1[i]);
       if (month != null) {
         month = month.getElementsByTagName("td");
         for(var j = 0; j < month.length; j++) {
@@ -541,10 +584,10 @@ angular.module('starter.controllers', ['ionic.cloud'])
         }
       }
     }
-    $scope.modal5.hide();
+    $scope.calendarModal.hide();
   };
 
   $scope.closeImage = function() {
-    $scope.modal6.hide();
+    $scope.viewImageModal.hide();
   };
 });
