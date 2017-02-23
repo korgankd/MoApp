@@ -101,3 +101,12 @@ img.pics {
     opacity: 0;
   }
 }
+
+#map {
+	height: 80%;
+	width: 80%;
+}
+
+.scroll {
+	height: 100%;
+}

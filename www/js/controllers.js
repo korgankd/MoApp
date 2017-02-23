@@ -8,6 +8,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
 .controller('AppCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window, $ionicLoading) {
 
+  var gmapsAPIkey = "AIzaSyDm_Iqh2lIqfv2ebn3P3tvHVzLrd1-_EDk";
   $ionicDB.connect();
   var usersDB = $ionicDB.collection('users');
   // With the new view caching in Ionic, Controllers are only called
@@ -93,6 +94,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
   $ionicDB.connect();
   var usersDB = $ionicDB.collection('users');
   $scope.userData = {};
+  var geocoder = new google.maps.Geocoder();
 
   $scope.$on('$ionicView.enter', function(e) {
     if($ionicAuth.isAuthenticated()) {
@@ -327,6 +329,14 @@ angular.module('starter.controllers', ['ionic.cloud'])
     $ionicLoading.hide();
   };
 
+  $scope.getCoordinates = function(address, callback) {
+    var coordinates;
+    geocoder.geocode({address: address}, function(results, status) {
+      coordinates = [results[0].geometry.viewport.f.b,results[0].geometry.viewport.b.b];
+      callback(coordinates);
+    });
+  };
+
   $scope.checkAuth = function() {
     alert($ionicAuth.isAuthenticated() + " " + $ionicUser.details.email);
   };
@@ -385,6 +395,11 @@ angular.module('starter.controllers', ['ionic.cloud'])
       if($scope.userData.location != undefined) {
         upadateData.location = $scope.userData.location;
         $scope.user.location = $scope.userData.location;
+        $scope.getCoordinates($scope.userData.location, function(coordinates) {
+          $scope.user.coordinates = coordinates;
+          usersDB.update({id: $ionicUser.id, coordinates: coordinates});
+          console.log($scope.user.coordinates);
+        });
       }
       if($scope.userData.description != undefined) {
         upadateData.description = $scope.userData.description;
@@ -395,6 +410,13 @@ angular.module('starter.controllers', ['ionic.cloud'])
     } else {
       alert("You must be signed in to do that.");
     }
+  };
+
+  $scope.addCoordinates = function() {
+    console.log($scope.user.coordinates1);
+    var upadateData = {id: $ionicUser.id, complete: true};
+    upadateData.coordinates = $scope.user.coordinates1;
+    usersDB.update(upadateData);
   };
 
   $scope.saveImage = function() {
@@ -590,4 +612,76 @@ angular.module('starter.controllers', ['ionic.cloud'])
   $scope.closeImage = function() {
     $scope.viewImageModal.hide();
   };
+})
+
+.controller('SearchCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window, $http) {
+
+  var geocoder = new google.maps.Geocoder();
+  $ionicDB.connect();
+  $scope.input = {};
+
+  $scope.$on('$ionicView.enter', function(e) {
+    usersDB.findAll({complete: true}).fetch().subscribe(function(msg) {
+      $scope.accounts = msg;
+    });
+  });
+  var usersDB = $ionicDB.collection('users');
+
+  google.maps.event.addDomListener(window,"load", function() {
+    $scope.buildMap();
+  });
+
+  $scope.buildMap = function() {
+    var myLatlng = new google.maps.LatLng(38.711051, -77.356396);
+    var mapOptions = {
+      center: myLatlng,
+      zoom: 8
+    };
+    var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+    $scope.map = map;
+  };
+
+  $scope.findZip = function() {
+    console.log($scope.input.zipcode);
+    $scope.getCoordinates($scope.input.zipcode.toString(), function(coordinates) {
+      console.log(coordinates);
+      var coord = new google.maps.LatLng(coordinates[0],coordinates[1]);
+      $scope.map.setCenter(coord);
+      $scope.map.setZoom(14);
+      var list = document.getElementById("accountList");
+      for(var i = 0; i < $scope.accounts.length; i++) {
+        var coord2 = new google.maps.LatLng($scope.accounts[i].coordinates[0],$scope.accounts[i].coordinates[1]);
+        var item = document.createElement("li");
+        var distance = Math.round(google.maps.geometry.spherical.computeDistanceBetween(coord,coord2) / 1000);
+        var itemContent = $scope.accounts[i].name + " ... " + $scope.accounts[i].location + " ... " + distance + "km";
+        item.appendChild(document.createTextNode(itemContent));
+        list.appendChild(item);
+      }
+    });
+  };
+/*
+  usersDB.findAll({complete: true}).fetch().subscribe(function(msg) {
+    $scope.accounts = msg;
+    console.log($scope.accounts);
+    for(var i = 0; i < $scope.accounts.length; i++) {
+      $scope.getCoordinates($scope.accounts[i].location, function(coordinates) {
+        console.log(coordinates);
+        if($scope.accounts[i]) {
+          console.log("scoop");
+        }
+        //$scope.accounts[i].coordinates = coordinates;
+        //console.log($scope.accounts[i].coordinates);
+      });
+    }
+  });
+  */
+
+  $scope.getCoordinates = function(address, callback) {
+    var coordinates;
+    geocoder.geocode({address: address}, function(results, status) {
+      coordinates = [results[0].geometry.viewport.f.b,results[0].geometry.viewport.b.b];
+      callback(coordinates);
+    });
+  };
+
 });

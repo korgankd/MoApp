@@ -3,12 +3,18 @@
   	<br><br><br>
   	<table class="search">
   		<tr><td width="30%"></td><td colspan="2">
-  			Search 
+  			<h1>Search</h1> 
   		</td><td width="30%"></td></tr>
   		<tr><td></td><td>
-  			<input type="number" class="zip" name="zip" maxlength="5" placeholder="Zipcode">
-  			</td><td><button>Search</button>
+  			<input ng-model="input.zipcode" type="number" class="zip" name="zip" maxlength="5" placeholder="Zipcode">
+  			</td><td><button ng-click="findZip()">Search</button>
   		</td><td></td></tr>
   	</table>
+  	<ul id="accountList">
+  		<li>List of accounts: (need to sort by distance next)</li>
+  	</ul>
+  	<div id="map" tap-disabled="true"></div>
+
+  	<br><br><br><br>
   </ion-content>
 </ion-view>
