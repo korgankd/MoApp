@@ -642,39 +642,82 @@ angular.module('starter.controllers', ['ionic.cloud'])
   };
 
   $scope.findZip = function() {
-    console.log($scope.input.zipcode);
-    $scope.getCoordinates($scope.input.zipcode.toString(), function(coordinates) {
-      console.log(coordinates);
-      var coord = new google.maps.LatLng(coordinates[0],coordinates[1]);
-      $scope.map.setCenter(coord);
-      $scope.map.setZoom(14);
-      var list = document.getElementById("accountList");
-      for(var i = 0; i < $scope.accounts.length; i++) {
-        var coord2 = new google.maps.LatLng($scope.accounts[i].coordinates[0],$scope.accounts[i].coordinates[1]);
-        var item = document.createElement("li");
-        var distance = Math.round(google.maps.geometry.spherical.computeDistanceBetween(coord,coord2) / 1000);
-        var itemContent = $scope.accounts[i].name + " ... " + $scope.accounts[i].location + " ... " + distance + "km";
-        item.appendChild(document.createTextNode(itemContent));
-        list.appendChild(item);
-      }
-    });
-  };
-/*
-  usersDB.findAll({complete: true}).fetch().subscribe(function(msg) {
-    $scope.accounts = msg;
-    console.log($scope.accounts);
-    for(var i = 0; i < $scope.accounts.length; i++) {
-      $scope.getCoordinates($scope.accounts[i].location, function(coordinates) {
+    if($scope.input.zipcode) {
+      console.log($scope.input.zipcode);
+      $scope.getCoordinates($scope.input.zipcode.toString(), function(coordinates) {
         console.log(coordinates);
-        if($scope.accounts[i]) {
-          console.log("scoop");
+        var coord = new google.maps.LatLng(coordinates[0],coordinates[1]);
+        $scope.map.setCenter(coord);
+        $scope.map.setZoom(14);
+        var rows = [];
+        var list = document.getElementById("accountList");
+        var trs = list.getElementsByTagName("tr");
+        for(var i = trs.length-1; i > 0; i--) { //hide table
+          trs[i].hidden = true;
         }
-        //$scope.accounts[i].coordinates = coordinates;
-        //console.log($scope.accounts[i].coordinates);
+        for(var i = 0; i < $scope.accounts.length; i++) {
+          var coord2 = new google.maps.LatLng($scope.accounts[i].coordinates[0],$scope.accounts[i].coordinates[1]);
+          var distance = Math.round(google.maps.geometry.spherical.computeDistanceBetween(coord,coord2) / 1000);
+          var row = document.createElement("tr");
+          var acctName = document.createElement("td");
+          var acctLocation = document.createElement("td");
+          var acctDistance = document.createElement("td");
+          acctName.appendChild(document.createTextNode($scope.accounts[i].name));
+          acctLocation.appendChild(document.createTextNode($scope.accounts[i].location));
+          acctDistance.appendChild(document.createTextNode(distance + " km"));
+          row.appendChild(acctName);
+          row.appendChild(acctLocation);
+          row.appendChild(acctDistance);
+          rows.push(row);
+          list.appendChild(row);
+          console.log(row.cells[2].innerHTML.substring(0,row.cells[2].innerHTML.length-3));
+        }
+        $scope.sortTable(list);
       });
+    } else {
+      alert("Type a zipcode");
     }
-  });
-  */
+  };
+
+  $scope.doRefresh = function() {
+    google.maps.event.trigger($scope.map, 'resize');
+    $scope.$broadcast('scroll.refreshComplete');
+  };
+  
+  $scope.sortTable = function (table) {
+    var table, rows, switching, i, x, y, shouldSwitch;
+    //table = document.getElementById("myTable");
+    switching = true;
+    /*Make a loop that will continue until
+    no switching has been done:*/
+    while (switching) {
+      //start by saying: no switching is done:
+      switching = false;
+      rows = table.getElementsByTagName("TR");
+      /*Loop through all table rows (except the
+      first, which contains table headers):*/
+      for (i = 1; i < (rows.length - 1); i++) {
+        //start by saying there should be no switching:
+        shouldSwitch = false;
+        /*Get the two elements you want to compare,
+        one from current row and one from the next:*/
+        x = rows[i].getElementsByTagName("TD")[2];
+        y = rows[i + 1].getElementsByTagName("TD")[2];
+        //check if the two rows should switch place:
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          //if so, mark as a switch and break the loop:
+          shouldSwitch= true;
+          break;
+        }
+      }
+      if (shouldSwitch) {
+        /*If a switch has been marked, make the switch
+        and mark that a switch has been done:*/
+        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+        switching = true;
+      }
+    }
+  }
 
   $scope.getCoordinates = function(address, callback) {
     var coordinates;
