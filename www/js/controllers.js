@@ -28,6 +28,12 @@ angular.module('starter.controllers', ['ionic.cloud'])
     $scope.modal = modal;
   });
 
+  angular.element(document).ready(function() {
+    if($ionicAuth.isAuthenticated()) {
+      //document.getElementById("profileMenu")
+    }
+  });
+
   $scope.closeLogin = function() {
     $scope.modal.hide();
   };
@@ -286,22 +292,24 @@ angular.module('starter.controllers', ['ionic.cloud'])
   $scope.editcalendar = function() {
     $scope.editCalendarModal.show();
     //highlight shit on the list... not very efficient, fix later
-    var dates = $scope.user.availableDates;
-    console.log(dates);
-    for(var i = 0; i < dates.length; i++) {
-      var m = dates[i][0] + dates[i][1]; //create month/day var for number on dates array
-      console.log(m);
-      var day = dates[i][2] + dates[i][3];
-      console.log(day);
-      var month = document.getElementById(months[+m - 1]);
-      month = month.getElementsByTagName("td");
-      for(var j = 0; j < month.length; j++) {
-        if(+angular.element(month[j]).text() == +day){
-          console.log("found date: " + m + " " + day);
-          console.log(month[j]);
-          month[j].classList.add("highlight");
+    if($scope.user.availableDates) {
+      var dates = $scope.user.availableDates;
+      console.log(dates);
+      for(var i = 0; i < dates.length; i++) {
+        var m = dates[i][0] + dates[i][1]; //create month/day var for number on dates array
+        console.log(m);
+        var day = dates[i][2] + dates[i][3];
+        console.log(day);
+        var month = document.getElementById(months[+m - 1]);
+        month = month.getElementsByTagName("td");
+        for(var j = 0; j < month.length; j++) {
+          if(+angular.element(month[j]).text() == +day){
+            console.log("found date: " + m + " " + day);
+            console.log(month[j]);
+            month[j].classList.add("highlight");
+          }
         }
-      }
+      }   
     }
   };
 
@@ -365,7 +373,12 @@ angular.module('starter.controllers', ['ionic.cloud'])
     }
     else{
       $event.currentTarget.classList.add("highlight");
-      $scope.user.availableDates.push(month + day);
+      if($scope.user.availableDates) {
+        $scope.user.availableDates.push(month + day);
+      } else {
+        $scope.user.availableDates = [];
+        $scope.user.availableDates.push(month + day);
+      }
       console.log($scope.user.availableDates);
     }
   };
@@ -375,7 +388,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
       var upadateData = {id: $ionicUser.id, availableDates: $scope.user.availableDates};
       usersDB.update(upadateData);
       alert("Availability Saved Successfully.");
-      $scope.editCalendarModal.hide();
+      //$scope.editCalendarModal.hide();
     } else {
       alert("You must be signed in to do that.");
     }
