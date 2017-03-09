@@ -6,7 +6,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
     };
 }])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window, $ionicLoading) {
+.controller('AppCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window, $ionicLoading, $state) {
 
   var gmapsAPIkey = "AIzaSyDm_Iqh2lIqfv2ebn3P3tvHVzLrd1-_EDk";
   $ionicDB.connect();
@@ -21,6 +21,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
   $scope.loginData = {};
   $scope.user = {};
+  $scope.profile;
 
   $ionicModal.fromTemplateUrl('templates/login.html', {
     scope: $scope
@@ -30,7 +31,10 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
   angular.element(document).ready(function() {
     if($ionicAuth.isAuthenticated()) {
-      //document.getElementById("profileMenu")
+      $scope.profile = false;
+      
+    } else {
+      $scope.profile = true;
     }
   });
 
@@ -50,13 +54,17 @@ angular.module('starter.controllers', ['ionic.cloud'])
     var details = {"email": $scope.loginData.email, "password": $scope.loginData.password};
     $ionicAuth.login('basic', details).then(function() {
       $scope.modal.hide();
+      $state.go('app.profile');
       usersDB.find({id:$ionicUser.id}).fetch().subscribe(function(USER) {
         $scope.user = USER;
         $scope.user.email = $ionicUser.details.email;
         alert("Login Successful.");
+        $scope.profile = false;
+        $scope.modal.hide();
         $window.location.reload();
       });
     }, function(err) {
+      $scope.hide();
       console.log(err);
     });
   };
@@ -91,9 +99,20 @@ angular.module('starter.controllers', ['ionic.cloud'])
       template: '<p>Loading...</p><ion-spinner></ion-spinner>'
     });
   };
+
+  $scope.hide = function() {
+    $ionicLoading.hide();
+  };
+
+  $scope.click = function() {
+    $scope.profile = !$scope.profile;
+    console.log("hey");
+    console.log($scope.profile);
+    console.log($scope);
+  };
 })
 
-.controller('ProfileCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window, $compile, $ionicLoading) {
+.controller('ProfileCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window, $compile, $ionicLoading, $state) {
 
   var months = ["january","february","march","april","may","june","july","august","september","october","november","december"];
   $scope.user = {};
@@ -388,7 +407,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
       var upadateData = {id: $ionicUser.id, availableDates: $scope.user.availableDates};
       usersDB.update(upadateData);
       alert("Availability Saved Successfully.");
-      //$scope.editCalendarModal.hide();
+      $scope.editCalendarModal.hide();
     } else {
       alert("You must be signed in to do that.");
     }
@@ -524,8 +543,10 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
   $scope.logout = function() {
     $ionicAuth.logout();
+    $state.go('app.search');
     $scope.user = {name:"", username:"", email:"", description:"", location:"", image:""};
     alert("Successfully logged out.");
+    document.getElementById("profileMenu").parentElement.removeChild(document.getElementById("profileMenu"));
     $scope.doRefresh();
   };
 })
@@ -535,6 +556,8 @@ angular.module('starter.controllers', ['ionic.cloud'])
   var months1 = ["january1","february1","march1","april1","may1","june1","july1","august1","september1","october1","november1","december1"];
   $ionicDB.connect();
   var usersDB = $ionicDB.collection('users');
+  $scope.rateAccount = {};
+  $scope.rateData = {"rating": 3};
 
   $scope.$on('$ionicView.enter', function(e) {
     usersDB.findAll({complete: true}).fetch().subscribe(function(msg) {
@@ -553,6 +576,12 @@ angular.module('starter.controllers', ['ionic.cloud'])
     animation: 'slide-in-up'
   }).then(function(modal) {
     $scope.viewImageModal = modal;
+  });
+
+  $ionicModal.fromTemplateUrl('templates/rate.html', {
+    scope: $scope
+  }).then(function(modal) {
+    $scope.rateModal = modal;
   });
 
   $scope.showImage = function(imgUrl) {
@@ -625,6 +654,47 @@ angular.module('starter.controllers', ['ionic.cloud'])
   $scope.closeImage = function() {
     $scope.viewImageModal.hide();
   };
+
+  $scope.rate = function(id) {
+    $scope.rateModal.show();
+    for(var i = 0; i < $scope.accounts.length; i++) {
+      if($scope.accounts[i].id == id) {
+        $scope.rateAccount = $scope.accounts[i];
+      }
+    }
+  };
+
+  $scope.closeRate = function() {
+    $scope.rateModal.hide();
+  };
+
+  $scope.star = function(id) {
+    var stars = document.getElementsByClassName("star");
+    for(var i = 0; i < 5; i++) { //remove all classes
+      if(stars[i].classList.contains("ion-android-star")) {
+        stars[i].classList.toggle("ion-android-star")
+      }
+      if(stars[i].classList.contains("ion-android-star-outline")) {
+        stars[i].classList.toggle("ion-android-star-outline")
+      }
+    }
+    for(var i = 0; i <= id; i++) {
+      stars[i].classList.add("ion-android-star");
+    }
+    for(var i = id+1; i < 5; i++) {
+      stars[i].classList.add("ion-android-star-outline");
+    }
+    $scope.rateData.rating = id+1;
+    console.log($scope.rateData);
+  };
+
+  $scope.saveRating = function() {
+    var upadateData = {id: $scope.rateAccount.id, review: $scope.rateData};
+    usersDB.update(upadateData);
+    alert("Rating Submitted Successfully");
+    $scope.rateModal.hide();
+  };
+
 })
 
 .controller('SearchCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window, $http) {
@@ -632,6 +702,29 @@ angular.module('starter.controllers', ['ionic.cloud'])
   var geocoder = new google.maps.Geocoder();
   $ionicDB.connect();
   $scope.input = {};
+
+  $scope.$on('$ionicView.enter', function(e) {
+    usersDB.findAll({complete: true}).fetch().subscribe(function(msg) {
+      $scope.accounts = msg;
+    });
+  });
+
+  $ionicModal.fromTemplateUrl('templates/searchresults.html', {
+    scope: $scope
+  }).then(function(modal) {
+    $scope.searchResultsModal = modal;
+  });
+
+  $scope.closeSearchResults =  function() {
+    $scope.searchResultsModal.hide();
+  };
+
+  $scope.click = function() {
+    console.log("hey");
+    console.log($scope.profile);
+    console.log($scope);
+    $scope.profile = !$scope.profile;
+  };
 
   $scope.$on('$ionicView.enter', function(e) {
     usersDB.findAll({complete: true}).fetch().subscribe(function(msg) {
@@ -655,13 +748,19 @@ angular.module('starter.controllers', ['ionic.cloud'])
   };
 
   $scope.findZip = function() {
+    $scope.searchResults = [];
     if($scope.input.zipcode) {
+      console.log($scope.input.zipcode);
+      while($scope.input.zipcode.toString().length < 5) {
+        $scope.input.zipcode = "0" + $scope.input.zipcode;
+        console.log("yup");
+      }
       console.log($scope.input.zipcode);
       $scope.getCoordinates($scope.input.zipcode.toString(), function(coordinates) {
         console.log(coordinates);
         var coord = new google.maps.LatLng(coordinates[0],coordinates[1]);
-        $scope.map.setCenter(coord);
-        $scope.map.setZoom(14);
+        //$scope.map.setCenter(coord);
+        //$scope.map.setZoom(14);
         var rows = [];
         var list = document.getElementById("accountList");
         var trs = list.getElementsByTagName("tr");
@@ -670,22 +769,29 @@ angular.module('starter.controllers', ['ionic.cloud'])
         }
         for(var i = 0; i < $scope.accounts.length; i++) {
           var coord2 = new google.maps.LatLng($scope.accounts[i].coordinates[0],$scope.accounts[i].coordinates[1]);
-          var distance = Math.round(google.maps.geometry.spherical.computeDistanceBetween(coord,coord2) / 1000);
+          var distance = Math.round(google.maps.geometry.spherical.computeDistanceBetween(coord,coord2) / 1000 * 0.621371);
           var row = document.createElement("tr");
           var acctName = document.createElement("td");
           var acctLocation = document.createElement("td");
           var acctDistance = document.createElement("td");
           acctName.appendChild(document.createTextNode($scope.accounts[i].name));
           acctLocation.appendChild(document.createTextNode($scope.accounts[i].location));
-          acctDistance.appendChild(document.createTextNode(distance + " km"));
+          acctDistance.appendChild(document.createTextNode(distance));
           row.appendChild(acctName);
           row.appendChild(acctLocation);
           row.appendChild(acctDistance);
           rows.push(row);
           list.appendChild(row);
-          console.log(row.cells[2].innerHTML.substring(0,row.cells[2].innerHTML.length-3));
+          console.log(row.cells[2].innerHTML);//.substring(0,row.cells[2].innerHTML.length-3));
+          if(distance < 101){
+            $scope.searchResults.push($scope.accounts[i]);
+            $scope.searchResults[$scope.searchResults.length-1].distance = distance;
+          }
         }
         $scope.sortTable(list);
+        if($scope.searchResultsModal) {
+          $scope.searchResultsModal.show();
+        }
       });
     } else {
       alert("Type a zipcode");
@@ -717,7 +823,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
         x = rows[i].getElementsByTagName("TD")[2];
         y = rows[i + 1].getElementsByTagName("TD")[2];
         //check if the two rows should switch place:
-        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+        if (+x.innerHTML > +y.innerHTML) {
           //if so, mark as a switch and break the loop:
           shouldSwitch= true;
           break;
@@ -738,6 +844,10 @@ angular.module('starter.controllers', ['ionic.cloud'])
       coordinates = [results[0].geometry.viewport.f.b,results[0].geometry.viewport.b.b];
       callback(coordinates);
     });
+  };
+
+  $scope.checkAuth = function() {
+    alert($ionicAuth.isAuthenticated() + " " + $ionicUser.details.email);
   };
 
 });

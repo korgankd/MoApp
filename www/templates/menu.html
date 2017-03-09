@@ -1,4 +1,4 @@
-<ion-side-menus enable-menu-with-back-views="false">
+<ion-side-menus enable-menu-with-back-views="true">
   <ion-side-menu-content drag-content="false">
     <ion-nav-bar class="bar-stable">
       <ion-nav-back-button>
@@ -27,7 +27,7 @@
         <ion-item menu-close href="#/app/browse">
           Browse
         </ion-item>
-        <ion-item id="profileMenu" menu-close href="#/app/profile">
+        <ion-item id="profileMenu" menu-close href="#/app/profile" ng-hide="profile">
           Profile
         </ion-item>
       </ion-list>

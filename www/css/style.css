@@ -110,3 +110,11 @@ img.pics {
 .scroll {
 	height: 100%;
 }
+
+.ion-android-star {
+  font-size: 50px;
+}
+
+.ion-android-star-outline {
+  font-size: 50px;
+}

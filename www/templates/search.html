@@ -1,23 +1,24 @@
-<ion-view view-title="Search">
+<ion-view hide-back-button="true" view-title="Search">
   <ion-content>
     <ion-refresher
       pulling-text="Pull to refresh..."
       on-refresh="doRefresh()">
     </ion-refresher>
   	<br><br><br>
+
   	<table class="search">
   		<tr><td width="30%"></td><td colspan="2">
   			<h1>Search</h1> 
   		</td><td width="30%"></td></tr>
   		<tr><td></td><td>
-  			<input ng-model="input.zipcode" type="number" class="zip" name="zip" maxlength="5" placeholder="Zipcode">
+  			<input ng-model="input.zipcode" type="number" pattern="[0-9]{5}" class="zip" name="zip" maxlength="5" placeholder="Zipcode">
   			</td><td><button ng-click="findZip()">Search</button>
   		</td><td></td></tr>
   	</table>
   	<table id="accountList" class="sortable">
-  		<tr><th width="30%">Name</th><th width="30%">Location</th><th width="30%">Distance</th></tr>
+  		<tr><th width="30%">Name</th><th width="30%">Location</th><th width="30%">Distance (miles)</th></tr>
   	</table>
-  	<div id="map" tap-disabled="true"></div>
+  	<div id="map" tap-disabled="true" ng-hide="true"></div>
 
   	<br><br><br><br>
   </ion-content>

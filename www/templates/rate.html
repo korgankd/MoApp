@@ -1,0 +1,42 @@
+<ion-modal-view>
+  <ion-header-bar>
+    <h1 class="title">Rate {{}}</h1>
+    <div class="buttons">
+      <button class="button button-positive" ng-click="closeRate()">Close</button>
+    </div>
+  </ion-header-bar>
+  <ion-content>
+    <form ng-submit="saveRating()">
+      <div class="list">
+        <label class="item item-input">
+          <span class="input-label">Leave a Review</span>
+          <textarea rows="6" ng-model="rateData.review"> </textarea>
+        </label>
+        <div center class="item tabs tabs-secondary tabs-icon-left stars">
+        	<a> <i></i>
+        	</a>
+            <a class="tab-item" ng-click="star(0)">
+        		<i class="icon ion-android-star star" id="star0"></i>
+        	</a>
+            <a class="tab-item" ng-click="star(1)">
+        		<i class="icon ion-android-star star" id="star1"></i>
+        	</a>
+            <a class="tab-item" ng-click="star(2)">
+        		<i class="icon ion-android-star star" id="star2"></i>
+        	</a>
+            <a class="tab-item" ng-click="star(3)">
+        		<i class="icon ion-android-star-outline star" id="star3"></i>
+        	</a>
+            <a class="tab-item" ng-click="star(4)">
+        		<i class="icon ion-android-star-outline star" id="star4"></i>
+        	</a>
+        	<a> <i></i>
+        	</a>
+        </div>
+        <label class="item">
+          <button class="button button-block button-positive" type="submit">Submit</button>
+        </label>
+      </div>
+    </form>
+  </ion-content>
+</ion-modal-view>

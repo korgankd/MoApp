@@ -1,15 +1,16 @@
-<ion-view hide-back-button="true" view-title="Browse">
+<ion-modal-view hide-back-button="true" view-title="Search Results">
+  <ion-header-bar>
+    <h1 class="title">Search Results</h1>
+    <div class="buttons">
+      <button class="button button-positive" ng-click="closeSearchResults()">Close</button>
+    </div>
+  </ion-header-bar>
   <ion-content>
-    <ion-refresher
-      pulling-text="Pull to refresh..."
-      on-refresh="doRefresh()">
-    </ion-refresher>
-    <br>
     <ion-list>
-      <ion-item ng-repeat="account in accounts" ng-click="">
+      <ion-item ng-repeat="account in searchResults">
         <div class="list card">
           <div class="item">
-            <h3><b>Username:</b> {{account.username}}</h3>
+            <h3><b>Distance:</b> {{account.distance}} miles</h3>
             <h2><b>Name:</b> {{account.name}}</h2>
             <p><b>Location:</b> {{account.location}}</p>
           </div>
@@ -27,23 +28,16 @@
               <td><iframe src="{{vid | trusted}}" width="100%" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
               </td>
             </tr></table>
+            <button ng-click="checkAvailability(account.id)">Check Availability</button>
           </div>
           <div class="item tabs tabs-secondary tabs-icon-left">
-            <a class="tab-item" ng-click="checkAvailability(account.id)">
-              <i class="icon ion-checkmark"></i>
-              Check Availability
-            </a>
             <a class="tab-item">
               <i class="icon ion-checkmark"></i>
               Book
-            </a>
-            <a class="tab-item" ng-click="rate(account.id)">
-              <i class="icon ion-thumbsup" ></i>
-              Rate
             </a>
           </div>
         </div>
       </ion-item>
     </ion-list>
   </ion-content>
-</ion-view>
+</ion-modal-view>
