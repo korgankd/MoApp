@@ -28,9 +28,12 @@
               <td><iframe src="{{vid | trusted}}" width="100%" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
               </td>
             </tr></table>
-            <button ng-click="checkAvailability(account.id)">Check Availability</button>
           </div>
           <div class="item tabs tabs-secondary tabs-icon-left">
+            <a class="tab-item" ng-click="checkAvailability(account.id)">
+              <i class="icon ion-calendar"></i>
+              Check Availability
+            </a>
             <a class="tab-item">
               <i class="icon ion-checkmark"></i>
               Book

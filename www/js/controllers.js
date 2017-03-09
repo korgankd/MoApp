@@ -689,7 +689,11 @@ angular.module('starter.controllers', ['ionic.cloud'])
   };
 
   $scope.saveRating = function() {
-    var upadateData = {id: $scope.rateAccount.id, review: $scope.rateData};
+    if(!$scope.rateAccount.reviews) {
+      $scope.rateAccount.reviews = [];
+    }
+    $scope.rateAccount.reviews.push($scope.rateData);
+    var upadateData = {id: $scope.rateAccount.id, reviews: $scope.rateAccount.reviews};
     usersDB.update(upadateData);
     alert("Rating Submitted Successfully");
     $scope.rateModal.hide();
@@ -702,11 +706,18 @@ angular.module('starter.controllers', ['ionic.cloud'])
   var geocoder = new google.maps.Geocoder();
   $ionicDB.connect();
   $scope.input = {};
+  var months1 = ["january1","february1","march1","april1","may1","june1","july1","august1","september1","october1","november1","december1"];
 
   $scope.$on('$ionicView.enter', function(e) {
     usersDB.findAll({complete: true}).fetch().subscribe(function(msg) {
       $scope.accounts = msg;
     });
+  });
+
+  $ionicModal.fromTemplateUrl('templates/calendar.html', {
+    scope: $scope
+  }).then(function(modal) {
+    $scope.calendarModal = modal;
   });
 
   $ionicModal.fromTemplateUrl('templates/searchresults.html', {
@@ -719,11 +730,50 @@ angular.module('starter.controllers', ['ionic.cloud'])
     $scope.searchResultsModal.hide();
   };
 
-  $scope.click = function() {
-    console.log("hey");
-    console.log($scope.profile);
-    console.log($scope);
-    $scope.profile = !$scope.profile;
+  $scope.closeCalendar = function() {
+    //clear all highlighted dates from modal before hiding
+    for(var i = 0; i < months1.length; i++) {
+      var month = document.getElementById(months1[i]);
+      if (month != null) {
+        month = month.getElementsByTagName("td");
+        for(var j = 0; j < month.length; j++) {
+          if(month[j].classList.contains("highlight")){
+            month[j].classList.remove("highlight");
+          }
+        }
+      }
+    }
+    $scope.calendarModal.hide();
+  };
+
+  $scope.checkAvailability = function(id) {
+    $scope.calendarModal.show();
+    // find account object with this id
+    var account;
+    for(var i = 0; i < $scope.accounts.length; i++) {
+      if($scope.accounts[i].id == id) {
+        account = $scope.accounts[i];
+      }
+    }
+    // highlight dates
+    if(account.availableDates) {
+      var dates = account.availableDates;
+      console.log(dates);
+      for(var i = 0; i < dates.length; i++) {
+        var m = dates[i][0] + dates[i][1];
+        var day = dates[i][2] + dates[i][3];
+        console.log(months1[+m - 1]);
+        var month = document.getElementById(months1[+m - 1]);
+        month = month.getElementsByTagName("td");
+        for(var j = 0; j < month.length; j++) {
+          if(+angular.element(month[j]).text() == +day){
+            console.log("found date: " + m + " " + day);
+            console.log(month[j]);
+            month[j].classList.add("highlight");
+          }
+        }
+      }
+    }
   };
 
   $scope.$on('$ionicView.enter', function(e) {
@@ -770,25 +820,12 @@ angular.module('starter.controllers', ['ionic.cloud'])
         for(var i = 0; i < $scope.accounts.length; i++) {
           var coord2 = new google.maps.LatLng($scope.accounts[i].coordinates[0],$scope.accounts[i].coordinates[1]);
           var distance = Math.round(google.maps.geometry.spherical.computeDistanceBetween(coord,coord2) / 1000 * 0.621371);
-          var row = document.createElement("tr");
-          var acctName = document.createElement("td");
-          var acctLocation = document.createElement("td");
-          var acctDistance = document.createElement("td");
-          acctName.appendChild(document.createTextNode($scope.accounts[i].name));
-          acctLocation.appendChild(document.createTextNode($scope.accounts[i].location));
-          acctDistance.appendChild(document.createTextNode(distance));
-          row.appendChild(acctName);
-          row.appendChild(acctLocation);
-          row.appendChild(acctDistance);
-          rows.push(row);
-          list.appendChild(row);
-          console.log(row.cells[2].innerHTML);//.substring(0,row.cells[2].innerHTML.length-3));
           if(distance < 101){
             $scope.searchResults.push($scope.accounts[i]);
             $scope.searchResults[$scope.searchResults.length-1].distance = distance;
           }
         }
-        $scope.sortTable(list);
+        $scope.sortTable($scope.searchResults);
         if($scope.searchResultsModal) {
           $scope.searchResultsModal.show();
         }
@@ -803,7 +840,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
     $scope.$broadcast('scroll.refreshComplete');
   };
   
-  $scope.sortTable = function (table) {
+  $scope.sortTable = function (list) {
     var table, rows, switching, i, x, y, shouldSwitch;
     //table = document.getElementById("myTable");
     switching = true;
@@ -812,18 +849,18 @@ angular.module('starter.controllers', ['ionic.cloud'])
     while (switching) {
       //start by saying: no switching is done:
       switching = false;
-      rows = table.getElementsByTagName("TR");
+      rows = list;
       /*Loop through all table rows (except the
       first, which contains table headers):*/
-      for (i = 1; i < (rows.length - 1); i++) {
+      for (i = 0; i < (rows.length - 1); i++) {
         //start by saying there should be no switching:
         shouldSwitch = false;
         /*Get the two elements you want to compare,
         one from current row and one from the next:*/
-        x = rows[i].getElementsByTagName("TD")[2];
-        y = rows[i + 1].getElementsByTagName("TD")[2];
+        x = rows[i].distance;
+        y = rows[i + 1].distance;
         //check if the two rows should switch place:
-        if (+x.innerHTML > +y.innerHTML) {
+        if (x > y) {
           //if so, mark as a switch and break the loop:
           shouldSwitch= true;
           break;
@@ -832,7 +869,8 @@ angular.module('starter.controllers', ['ionic.cloud'])
       if (shouldSwitch) {
         /*If a switch has been marked, make the switch
         and mark that a switch has been done:*/
-        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+        list[i] = y;
+        list[i+1] = x;
         switching = true;
       }
     }
