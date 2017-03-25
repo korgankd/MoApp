@@ -1,0 +1,388 @@
+<ion-modal-view>
+  <ion-header-bar>
+    <h1 class="title">2017 Calendar</h1>
+    <div class="buttons">
+      <button class="button button-positive" ng-click="closeCalendar()">Close</button>
+    </div>
+  </ion-header-bar>
+  <ion-content id="calendar-search">
+    <div id="january-search" class="month" hidden>
+      <table class="navHead">
+        <tr>
+          <td>
+            <button ng-click="goToMonth('january-search')">Last Month</button>
+          </td>
+          <th>
+            January
+          </th>
+          <td>
+            <button ng-click="goToMonth('february-search')">Next Month</button>
+          </td>
+        </tr>
+      </table>
+      <table class="cal">
+        <tr>
+          <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thurs</th><th>Fri</th><th>Sat</th>
+        </tr>
+        <tr>
+          <td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td>
+        </tr><tr>
+          <td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td>
+        </tr><tr>
+          <td>15</td><td>16</td><td>17</td><td>18</td><td>19</td><td>20</td><td>21</td>
+        </tr><tr>
+          <td>22</td><td>23</td><td>24</td><td>25</td><td>26</td><td>27</td><td>28</td>
+        </tr><tr>
+          <td>29</td><td>30</td><td>31</td><td></td><td></td><td></td><td></td>
+        </tr>
+      </table>
+    </div>
+    <div id="february-search" class="month" hidden>
+      <table class="navHead">
+        <tr>
+          <td>
+            <button ng-click="goToMonth('january-search')">Last Month</button>
+          </td>
+          <th>
+            February
+          </th>
+          <td>
+            <button ng-click="goToMonth('march-search')">Next Month</button>
+          </td>
+        </tr>
+      </table>
+      <table class="cal">
+        <tr>
+          <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thurs</th><th>Fri</th><th>Sat</th>
+        </tr>
+        <tr>
+          <td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td>
+        </tr><tr>
+          <td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td>
+        </tr><tr>
+          <td>12</td><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td>
+        </tr><tr>
+          <td>19</td><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td>
+        </tr><tr>
+          <td>26</td><td>27</td><td>28</td><td></td><td></td><td></td><td></td>
+        </tr>
+      </table>
+    </div>
+    <div id="march-search" class="month" >
+      <table class="navHead">
+        <tr>
+          <td>
+            <button ng-click="goToMonth('february-search')">Last Month</button>
+          </td>
+          <th>
+            March
+          </th>
+          <td>
+            <button ng-click="goToMonth('april-search')">Next Month</button>
+          </td>
+        </tr>
+      </table>
+      <table class="cal">
+        <tr>
+          <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thurs</th><th>Fri</th><th>Sat</th>
+        </tr>
+        <tr>
+          <td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td>
+        </tr><tr>
+          <td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td>
+        </tr><tr>
+          <td>12</td><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td>
+        </tr><tr>
+          <td>19</td><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td>
+        </tr><tr>
+          <td>26</td><td>27</td><td>28</td><td>29</td><td>30</td><td>31</td><td></td>
+        </tr>
+      </table>
+    </div>
+    <div id="april-search" class="month" hidden>
+      <table class="navHead">
+        <tr>
+          <td>
+            <button ng-click="goToMonth('march-search')">Last Month</button>
+          </td>
+          <th>
+            April
+          </th>
+          <td>
+            <button ng-click="goToMonth('may-search')">Next Month</button>
+          </td>
+        </tr>
+      </table>
+      <table class="cal">
+        <tr>
+          <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thurs</th><th>Fri</th><th>Sat</th>
+        </tr>
+        <tr>
+          <td></td><td></td><td></td><td></td><td></td><td></td><td>1</td>
+        </tr><tr>
+          <td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td>
+        </tr><tr>
+          <td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td>
+        </tr><tr>
+          <td>16</td><td>17</td><td>18</td><td>19</td><td>20</td><td>21</td><td>22</td>
+        </tr><tr>
+          <td>23</td><td>24</td><td>25</td><td>26</td><td>27</td><td>28</td><td>29</td>
+        </tr><tr>
+          <td>30</td><td></td><td></td><td></td><td></td><td></td><td></td>
+        </tr>
+      </table>
+    </div>
+    <div id="may-search" class="month" hidden>
+      <table class="navHead">
+        <tr>
+          <td>
+            <button ng-click="goToMonth('april-search')">Last Month</button>
+          </td>
+          <th>
+            May
+          </th>
+          <td>
+            <button ng-click="goToMonth('june-search')">Next Month</button>
+          </td>
+        </tr>
+      </table>
+      <table class="cal">
+        <tr>
+          <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thurs</th><th>Fri</th><th>Sat</th>
+        </tr>
+        <tr>
+          <td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td>
+        </tr><tr>
+          <td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td>
+        </tr><tr>
+          <td>14</td><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td><td>20</td>
+        </tr><tr>
+          <td>21</td><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td><td>27</td>
+        </tr><tr>
+          <td>28</td><td>29</td><td>30</td><td>31</td><td></td><td></td><td></td>
+        </tr>
+      </table>
+    </div>
+    <div id="june-search" class="month" hidden>
+      <table class="navHead">
+        <tr>
+          <td>
+            <button ng-click="goToMonth('may-search')">Last Month</button>
+          </td>
+          <th>
+            June
+          </th>
+          <td>
+            <button ng-click="goToMonth('july-search')">Next Month</button>
+          </td>
+        </tr>
+      </table>
+      <table class="cal">
+        <tr>
+          <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thurs</th><th>Fri</th><th>Sat</th>
+        </tr>
+        <tr>
+          <td></td><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td>
+        </tr><tr>
+          <td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td>
+        </tr><tr>
+          <td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td>
+        </tr><tr>
+          <td>18</td><td>19</td><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td>
+        </tr><tr>
+          <td>25</td><td>26</td><td>27</td><td>28</td><td>29</td><td>30</td><td></td>
+        </tr>
+      </table>
+    </div>
+    <div id="july-search" class="month" hidden>
+      <table class="navHead">
+        <tr>
+          <td>
+            <button ng-click="goToMonth('june-search')">Last Month</button>
+          </td>
+          <th>
+            July
+          </th>
+          <td>
+            <button ng-click="goToMonth('august-search')">Next Month</button>
+          </td>
+        </tr>
+      </table>
+      <table class="cal">
+        <tr>
+          <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thurs</th><th>Fri</th><th>Sat</th>
+        </tr>
+        <tr>
+          <td></td><td></td><td></td><td></td><td></td><td></td><td>1</td>
+        </tr><tr>
+          <td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td>
+        </tr><tr>
+          <td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td>
+        </tr><tr>
+          <td>16</td><td>17</td><td>18</td><td>19</td><td>20</td><td>21</td><td>22</td>
+        </tr><tr>
+          <td>23</td><td>24</td><td>25</td><td>26</td><td>27</td><td>28</td><td>29</td>
+        </tr><tr>
+          <td>30</td><td>31</td><td></td><td></td><td></td><td></td><td></td>
+        </tr>
+      </table>
+    </div>
+    <div id="august-search" class="month" hidden>
+      <table class="navHead">
+        <tr>
+          <td>
+            <button ng-click="goToMonth('july-search')">Last Month</button>
+          </td>
+          <th>
+            August
+          </th>
+          <td>
+            <button ng-click="goToMonth('september-search')">Next Month</button>
+          </td>
+        </tr>
+      </table>
+      <table class="cal">
+        <tr>
+          <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thurs</th><th>Fri</th><th>Sat</th>
+        </tr>
+        <tr>
+          <td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td>
+        </tr><tr>
+          <td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td>
+        </tr><tr>
+          <td>13</td><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td>
+        </tr><tr>
+          <td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td>
+        </tr><tr>
+          <td>27</td><td>28</td><td>29</td><td>30</td><td>31</td><td></td><td></td>
+        </tr>
+      </table>
+    </div>
+    <div id="september-search" class="month" hidden>
+      <table class="navHead">
+        <tr>
+          <td>
+            <button ng-click="goToMonth('august-search')">Last Month</button>
+          </td>
+          <th>
+            September
+          </th>
+          <td>
+            <button ng-click="goToMonth('october-search')">Next Month</button>
+          </td>
+        </tr>
+      </table>
+      <table class="cal">
+        <tr>
+          <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thurs</th><th>Fri</th><th>Sat</th>
+        </tr>
+        <tr>
+          <td></td><td></td><td></td><td></td><td></td><td>1</td><td>2</td>
+        </tr><tr>
+          <td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td>
+        </tr><tr>
+          <td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td>
+        </tr><tr>
+          <td>17</td><td>18</td><td>19</td><td>20</td><td>21</td><td>22</td><td>23</td>
+        </tr><tr>
+          <td>24</td><td>25</td><td>26</td><td>27</td><td>28</td><td>29</td><td>30</td>
+        </tr>
+      </table>
+    </div>
+    <div id="october-search" class="month" hidden>
+      <table class="navHead">
+        <tr>
+          <td>
+            <button ng-click="goToMonth('september-search')">Last Month</button>
+          </td>
+          <th>
+            October
+          </th>
+          <td>
+            <button ng-click="goToMonth('november-search')">Next Month</button>
+          </td>
+        </tr>
+      </table>
+      <table class="cal">
+        <tr>
+          <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thurs</th><th>Fri</th><th>Sat</th>
+        </tr>
+        <tr>
+          <td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td>
+        </tr><tr>
+          <td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td>
+        </tr><tr>
+          <td>15</td><td>16</td><td>17</td><td>18</td><td>19</td><td>20</td><td>21</td>
+        </tr><tr>
+          <td>22</td><td>23</td><td>24</td><td>25</td><td>26</td><td>27</td><td>28</td>
+        </tr><tr>
+          <td>29</td><td>30</td><td>31</td><td></td><td></td><td></td><td></td>
+        </tr>
+      </table>
+    </div>
+    <div id="november-search" class="month" hidden>
+      <table class="navHead">
+        <tr>
+          <td>
+            <button ng-click="goToMonth('october-search')">Last Month</button>
+          </td>
+          <th>
+            November
+          </th>
+          <td>
+            <button ng-click="goToMonth('december-search')">Next Month</button>
+          </td>
+        </tr>
+      </table>
+      <table class="cal">
+        <tr>
+          <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thurs</th><th>Fri</th><th>Sat</th>
+        </tr>
+        <tr>
+          <td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td>
+        </tr><tr>
+          <td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td>
+        </tr><tr>
+          <td>12</td><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td>
+        </tr><tr>
+          <td>19</td><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td>
+        </tr><tr>
+          <td>26</td><td>27</td><td>28</td><td>29</td><td>30</td><td></td><td></td>
+        </tr>
+      </table>
+    </div>
+    <div id="december-search" class="month" hidden>
+      <table class="navHead">
+        <tr>
+          <td>
+            <button ng-click="goToMonth('november-search')">Last Month</button>
+          </td>
+          <th>
+            December
+          </th>
+          <td>
+            <button ng-click="goToMonth('december-search')">Next Month</button>
+          </td>
+        </tr>
+      </table>
+      <table class="cal">
+        <tr>
+          <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thurs</th><th>Fri</th><th>Sat</th>
+        </tr>
+        <tr>
+          <td></td><td></td><td></td><td></td><td></td><td>1</td><td>2</td>
+        </tr><tr>
+          <td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td>
+        </tr><tr>
+          <td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td>
+        </tr><tr>
+          <td>17</td><td>18</td><td>19</td><td>20</td><td>21</td><td>22</td><td>23</td>
+        </tr><tr>
+          <td>24</td><td>25</td><td>26</td><td>27</td><td>28</td><td>29</td><td>30</td>
+        </tr><tr>
+          <td>31</td><td></td><td></td><td></td><td></td><td></td><td></td>
+        </tr>
+      </table>
+    </div>
+  </ion-content>
+</ion-modal-view>

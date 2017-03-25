@@ -26,6 +26,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic.cloud'])
     if (window.StatusBar) {
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
+      StatusBar.overlaysWebView(false);
     }
   });
 })

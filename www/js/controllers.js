@@ -22,6 +22,10 @@ angular.module('starter.controllers', ['ionic.cloud'])
   $scope.loginData = {};
   $scope.user = {};
   $scope.profile;
+  $scope.menuList = document.getElementById("menuList").firstChild;
+  $scope.loginItem = document.getElementById("loginMenu");
+  $scope.logoutItem = document.getElementById("logoutMenu");
+  $scope.profileItem = document.getElementById("profileMenu");
 
   $ionicModal.fromTemplateUrl('templates/login.html', {
     scope: $scope
@@ -64,6 +68,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
         $window.location.reload();
       });
     }, function(err) {
+      alert("Incorrect Email or Password.");
       $scope.hide();
       console.log(err);
     });
@@ -92,6 +97,16 @@ angular.module('starter.controllers', ['ionic.cloud'])
         }
       }
     });
+  };
+
+  $scope.logout = function() {
+    $ionicAuth.logout();
+    $state.go('app.search');
+    $scope.user = {name:"", username:"", email:"", description:"", location:"", image:""};
+    alert("Successfully logged out.");
+    $scope.menuList.removeChild($scope.logoutItem);
+    $scope.menuList.removeChild($scope.profileItem);
+    $window.location.reload();
   };
 
   $scope.show = function() {
@@ -369,8 +384,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
   };
 
   $scope.goToMonth = function(month) {
-    var calendar = document.getElementById("calendar");
-    var divs = calendar.getElementsByClassName("month");
+    var divs = document.getElementsByClassName("month");
     for(var i = 0; i < divs.length; i++){
       divs[i].hidden = true;
     }
@@ -532,28 +546,12 @@ angular.module('starter.controllers', ['ionic.cloud'])
       }
     }
   };
-
-  $scope.like = function() {
-    alert("like!");
-  };
-
-  $scope.review = function() {
-    console.log($scope.user);
-  };
-
-  $scope.logout = function() {
-    $ionicAuth.logout();
-    $state.go('app.search');
-    $scope.user = {name:"", username:"", email:"", description:"", location:"", image:""};
-    alert("Successfully logged out.");
-    document.getElementById("profileMenu").parentElement.removeChild(document.getElementById("profileMenu"));
-    $scope.doRefresh();
-  };
 })
 
 .controller('AccountsCtrl', function($scope, $ionicModal, $timeout, $ionicDB, $ionicAuth, $ionicUser, $window) {
 
   var months1 = ["january1","february1","march1","april1","may1","june1","july1","august1","september1","october1","november1","december1"];
+  var monthsBook = ["january-book","february-book","march-book","april-book","may-book","june-book","july-book","august-book","september-book","october-book","november-book","december-book"];
   $ionicDB.connect();
   var usersDB = $ionicDB.collection('users');
   $scope.rateAccount = {};
@@ -563,6 +561,12 @@ angular.module('starter.controllers', ['ionic.cloud'])
     usersDB.findAll({complete: true}).fetch().subscribe(function(msg) {
       $scope.accounts = msg;
     });
+  });
+
+  $ionicModal.fromTemplateUrl('templates/book.html', {
+    scope: $scope
+  }).then(function(modal) {
+    $scope.bookModal = modal;
   });
 
   $ionicModal.fromTemplateUrl('templates/calendar.html', {
@@ -597,8 +601,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
   };
 
   $scope.goToMonth = function(month) {
-    var calendar = document.getElementById("calendar1");
-    var divs = calendar.getElementsByClassName("month");
+    var divs = document.getElementsByClassName("month");
     for(var i = 0; i < divs.length; i++){
       divs[i].hidden = true;
     }
@@ -651,6 +654,22 @@ angular.module('starter.controllers', ['ionic.cloud'])
     $scope.calendarModal.hide();
   };
 
+  $scope.closeBook = function() {
+    //clear all highlighted dates from modal before hiding
+    for(var i = 0; i < monthsBook.length; i++) {
+      var month = document.getElementById(monthsBook[i]);
+      if (month != null) {
+        month = month.getElementsByTagName("td");
+        for(var j = 0; j < month.length; j++) {
+          if(month[j].classList.contains("highlight")){
+            month[j].classList.remove("highlight");
+          }
+        }
+      }
+    }
+    $scope.bookModal.hide();
+  };
+
   $scope.closeImage = function() {
     $scope.viewImageModal.hide();
   };
@@ -664,8 +683,41 @@ angular.module('starter.controllers', ['ionic.cloud'])
     }
   };
 
+  $scope.book = function(id) {
+    $scope.bookModal.show();
+    // find account object with this id
+    var account;
+    for(var i = 0; i < $scope.accounts.length; i++) {
+      if($scope.accounts[i].id == id) {
+        account = $scope.accounts[i];
+      }
+    }
+    // highlight dates
+    if(account.availableDates) {
+      var dates = account.availableDates;
+      console.log(dates);
+      for(var i = 0; i < dates.length; i++) {
+        var m = dates[i][0] + dates[i][1];
+        var day = dates[i][2] + dates[i][3];
+        console.log(monthsBook[+m - 1]);
+        var month = document.getElementById(monthsBook[+m - 1]);
+        month = month.getElementsByTagName("td");
+        for(var j = 0; j < month.length; j++) {
+          if(+angular.element(month[j]).text() == +day){
+            console.log("found date: " + m + " " + day);
+            console.log(month[j]);
+            month[j].classList.add("highlight");
+          }
+        }
+      }
+    }
+  };
+
   $scope.closeRate = function() {
     $scope.rateModal.hide();
+    $scope.rateAccount = {};
+    $scope.rateData = {"rating": 3};
+    $scope.star(2);
   };
 
   $scope.star = function(id) {
@@ -694,9 +746,13 @@ angular.module('starter.controllers', ['ionic.cloud'])
     }
     $scope.rateAccount.reviews.push($scope.rateData);
     var upadateData = {id: $scope.rateAccount.id, reviews: $scope.rateAccount.reviews};
+    $scope.rateAccount = {};
+    $scope.rateData = {"rating": 3};
+    $scope.star(2);
     usersDB.update(upadateData);
     alert("Rating Submitted Successfully");
     $scope.rateModal.hide();
+    console.log()
   };
 
 })
@@ -705,8 +761,9 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
   var geocoder = new google.maps.Geocoder();
   $ionicDB.connect();
+  var usersDB = $ionicDB.collection('users');
   $scope.input = {};
-  var months1 = ["january1","february1","march1","april1","may1","june1","july1","august1","september1","october1","november1","december1"];
+  var monthsSearch = ["january-search","february-search","march-search","april-search","may-search","june-search","july-search","august-search","september-search","october-search","november-search","december-search"];
 
   $scope.$on('$ionicView.enter', function(e) {
     usersDB.findAll({complete: true}).fetch().subscribe(function(msg) {
@@ -714,10 +771,10 @@ angular.module('starter.controllers', ['ionic.cloud'])
     });
   });
 
-  $ionicModal.fromTemplateUrl('templates/calendar.html', {
+  $ionicModal.fromTemplateUrl('templates/searchcalendar.html', {
     scope: $scope
   }).then(function(modal) {
-    $scope.calendarModal = modal;
+    $scope.searchCalendarModal = modal;
   });
 
   $ionicModal.fromTemplateUrl('templates/searchresults.html', {
@@ -732,8 +789,8 @@ angular.module('starter.controllers', ['ionic.cloud'])
 
   $scope.closeCalendar = function() {
     //clear all highlighted dates from modal before hiding
-    for(var i = 0; i < months1.length; i++) {
-      var month = document.getElementById(months1[i]);
+    for(var i = 0; i < monthsSearch.length; i++) {
+      var month = document.getElementById(monthsSearch[i]);
       if (month != null) {
         month = month.getElementsByTagName("td");
         for(var j = 0; j < month.length; j++) {
@@ -743,11 +800,11 @@ angular.module('starter.controllers', ['ionic.cloud'])
         }
       }
     }
-    $scope.calendarModal.hide();
+    $scope.searchCalendarModal.hide();
   };
 
   $scope.checkAvailability = function(id) {
-    $scope.calendarModal.show();
+    $scope.searchCalendarModal.show();
     // find account object with this id
     var account;
     for(var i = 0; i < $scope.accounts.length; i++) {
@@ -762,8 +819,8 @@ angular.module('starter.controllers', ['ionic.cloud'])
       for(var i = 0; i < dates.length; i++) {
         var m = dates[i][0] + dates[i][1];
         var day = dates[i][2] + dates[i][3];
-        console.log(months1[+m - 1]);
-        var month = document.getElementById(months1[+m - 1]);
+        console.log(monthsSearch[+m - 1]);
+        var month = document.getElementById(monthsSearch[+m - 1]);
         month = month.getElementsByTagName("td");
         for(var j = 0; j < month.length; j++) {
           if(+angular.element(month[j]).text() == +day){
@@ -776,12 +833,13 @@ angular.module('starter.controllers', ['ionic.cloud'])
     }
   };
 
-  $scope.$on('$ionicView.enter', function(e) {
-    usersDB.findAll({complete: true}).fetch().subscribe(function(msg) {
-      $scope.accounts = msg;
-    });
-  });
-  var usersDB = $ionicDB.collection('users');
+  $scope.goToMonth = function(month) {
+    var divs = document.getElementsByClassName("month");
+    for(var i = 0; i < divs.length; i++){
+      divs[i].hidden = true;
+    }
+    document.getElementById(month).hidden = false;
+  };
 
   google.maps.event.addDomListener(window,"load", function() {
     $scope.buildMap();
@@ -807,23 +865,24 @@ angular.module('starter.controllers', ['ionic.cloud'])
       }
       console.log($scope.input.zipcode);
       $scope.getCoordinates($scope.input.zipcode.toString(), function(coordinates) {
+        var list = [5];
         console.log(coordinates);
         var coord = new google.maps.LatLng(coordinates[0],coordinates[1]);
         //$scope.map.setCenter(coord);
         //$scope.map.setZoom(14);
-        var rows = [];
-        var list = document.getElementById("accountList");
-        var trs = list.getElementsByTagName("tr");
-        for(var i = trs.length-1; i > 0; i--) { //hide table
-          trs[i].hidden = true;
-        }
+        // var rows = [];
+        // var list = document.getElementById("accountList");
+        // var trs = list.getElementsByTagName("tr");
+        // for(var i = trs.length-1; i > 0; i--) { //hide table
+        //   trs[i].hidden = true;
+        // }
         for(var i = 0; i < $scope.accounts.length; i++) {
           var coord2 = new google.maps.LatLng($scope.accounts[i].coordinates[0],$scope.accounts[i].coordinates[1]);
           var distance = Math.round(google.maps.geometry.spherical.computeDistanceBetween(coord,coord2) / 1000 * 0.621371);
-          if(distance < 101){
+          //if(distance < 101){
             $scope.searchResults.push($scope.accounts[i]);
             $scope.searchResults[$scope.searchResults.length-1].distance = distance;
-          }
+          //}
         }
         $scope.sortTable($scope.searchResults);
         if($scope.searchResultsModal) {
@@ -841,7 +900,7 @@ angular.module('starter.controllers', ['ionic.cloud'])
   };
   
   $scope.sortTable = function (list) {
-    var table, rows, switching, i, x, y, shouldSwitch;
+    var table, rows, switching, i, x, y, shouldSwitch, tempObject;
     //table = document.getElementById("myTable");
     switching = true;
     /*Make a loop that will continue until
@@ -849,16 +908,16 @@ angular.module('starter.controllers', ['ionic.cloud'])
     while (switching) {
       //start by saying: no switching is done:
       switching = false;
-      rows = list;
+      //rows = list;
       /*Loop through all table rows (except the
       first, which contains table headers):*/
-      for (i = 0; i < (rows.length - 1); i++) {
+      for (i = 0; i < (list.length - 1); i++) {
         //start by saying there should be no switching:
         shouldSwitch = false;
         /*Get the two elements you want to compare,
         one from current row and one from the next:*/
-        x = rows[i].distance;
-        y = rows[i + 1].distance;
+        x = list[i].distance;
+        y = list[i + 1].distance;
         //check if the two rows should switch place:
         if (x > y) {
           //if so, mark as a switch and break the loop:
@@ -869,10 +928,17 @@ angular.module('starter.controllers', ['ionic.cloud'])
       if (shouldSwitch) {
         /*If a switch has been marked, make the switch
         and mark that a switch has been done:*/
-        list[i] = y;
-        list[i+1] = x;
+        tempObject = list[i+1];
+        list[i+1] = list[i];
+        list[i] = tempObject;
         switching = true;
       }
+    }
+    console.log(list.length);
+    if(list.length > 5) {
+      console.log(list);
+      list.splice(5, list.length-5);
+      console.log(list);
     }
   }
 
